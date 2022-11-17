@@ -1,5 +1,44 @@
 {% extends "base.html" %}
-{% block title %}Create an Account{% endblock %}
+{% block title %}{{title}}{% endblock %}
 {% block content %}
-<h1>Signup</h1>
+<div class="card mx-auto text-center" style="width: 30rem; margin-top: 5rem;">
+    <div class="card-body">
+        <h1 class="card-title">Create Account</h1>
+
+        <div class="container-sm">
+            <form action="/signup" method="POST">
+                <div class="mb3">
+                    <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+                    <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputEmail">
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="inputCompany" class="col-sm-2 col-form-label">Company</label>
+                    <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputCompany">
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+                    <div class="col-sm-10">
+                    <input type="password" class="form-control" id="inputPassword">
+                    </div>
+                </div>
+                <div class="mb3">
+                    <label for="inputPassword" class="col-sm-2 col-form-label">Repeat Password</label>
+                    <div class="col-sm-10">
+                    <input type="password" class="form-control" id="inputPassword">
+                    </div>
+                </div>
+                <br><button type="submit" class="btn btn-primary btn-lg">Register</button>
+            </form>
+        
+            <br><br><label>Already have an account?</label><br>
+            <a class="btn btn-secondary" href="/login" role="button">Login</a>
+        </div>
+
+    </div>
+</div>
+
 {% endblock %}
