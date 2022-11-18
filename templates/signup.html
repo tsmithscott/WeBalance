@@ -7,36 +7,38 @@
 
         <div class="container-sm">
             <form action="/signup" method="POST">
-                <div class="mb3">
-                    <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
-                    <div class="d-flex">
-                    <input type="text" class="form-control" id="inputEmail">
+                <span class="text-nowrap">
+                    <div class="mb3">
+                        <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+                        <div class="d-flex">
+                        <input type="text" class="form-control" id="inputEmail">
+                        </div>
                     </div>
-                </div>
-                <div class="mb3">
-                    <label for="inputCompany" class="col-sm-2 col-form-label">Company</label>
-                    <div class="d-flex">
-                        <select class="form-select" id="companyIDSelector" style="text-align-last:center;">
-                            <option selected>Select...</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                          </select>
+                    <div class="mb3">
+                        <label for="inputCompany" class="col-sm-2 col-form-label">Company</label>
+                        <div class="d-flex">
+                            <select class="form-select" id="companyIDSelector" style="text-align-last:center;">
+                                <option selected>Select...</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="mb3">
-                    <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
-                    <div class="d-flex">
-                    <input type="password" class="form-control" id="inputPassword">
+                    <div class="mb3">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+                        <div class="d-flex">
+                        <input type="password" class="form-control" id="inputPassword">
+                        </div>
                     </div>
-                </div>
-                <div class="mb3">
-                    <label for="inputRepeatPassword" class="col-sm-2 col-form-label">Repeat Password</label>
-                    <div class="d-flex">
-                    <input type="password" class="form-control" id="inputRepeatPassword">
+                    <div class="mb3">
+                        <label for="inputRepeatPassword" class="col-sm-2 col-form-label">Repeat Password</label>
+                        <div class="d-flex">
+                        <input type="password" class="form-control" id="inputRepeatPassword">
+                        </div>
                     </div>
-                </div>
-                <br><button type="submit" class="btn btn-primary btn-lg">Register</button>
+                    <br><button type="submit" class="btn btn-primary btn-lg">Register</button>
+                </span>
             </form>
         
             <br><br><label>Already have an account?</label><br>
@@ -45,5 +47,4 @@
 
     </div>
 </div>
-
 {% endblock %}
