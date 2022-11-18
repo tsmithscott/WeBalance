@@ -33,5 +33,11 @@ def about():
     return render_template("index.html", title="About Us")
 
 
+@app.route("/logout")
+def logout():
+    # Clear session data
+    return redirect(url_for('home'))
+
+
 if __name__ == '__main__':
     app.run(debug=True)
