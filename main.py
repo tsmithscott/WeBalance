@@ -8,12 +8,12 @@ def home():
     return redirect(url_for("about"))
 
 
-@app.route("/login")
+@app.route("/login", methods=['GET', 'POST'])
 def login():
     return render_template("login.html", title="Login")
 
 
-@app.route("/signup")
+@app.route("/signup", methods=['GET', 'POST'])
 def signup():
     return render_template("signup.html", title="Create an Account")
 
@@ -23,13 +23,14 @@ def dashboard():
     return render_template("dashboard.html", title="Dashboard")
 
 
-@app.route("/preferences")
+@app.route("/preferences", methods=['GET', 'POST'])
 def preferences():
     return render_template("preferences.html", title="Preferences")
 
 
 @app.route("/about")
 def about():
+    # Populate index.html with info/animations/pictures
     return render_template("index.html", title="About Us")
 
 

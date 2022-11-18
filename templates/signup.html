@@ -9,26 +9,31 @@
             <form action="/signup" method="POST">
                 <div class="mb3">
                     <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
-                    <div class="col-sm-10">
+                    <div class="d-flex">
                     <input type="text" class="form-control" id="inputEmail">
                     </div>
                 </div>
                 <div class="mb3">
                     <label for="inputCompany" class="col-sm-2 col-form-label">Company</label>
-                    <div class="col-sm-10">
-                    <input type="text" class="form-control" id="inputCompany">
+                    <div class="d-flex">
+                        <select class="form-select" id="companyIDSelector" style="text-align-last:center;">
+                            <option selected>Select...</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                          </select>
                     </div>
                 </div>
                 <div class="mb3">
                     <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
-                    <div class="col-sm-10">
+                    <div class="d-flex">
                     <input type="password" class="form-control" id="inputPassword">
                     </div>
                 </div>
                 <div class="mb3">
-                    <label for="inputPassword" class="col-sm-2 col-form-label">Repeat Password</label>
-                    <div class="col-sm-10">
-                    <input type="password" class="form-control" id="inputPassword">
+                    <label for="inputRepeatPassword" class="col-sm-2 col-form-label">Repeat Password</label>
+                    <div class="d-flex">
+                    <input type="password" class="form-control" id="inputRepeatPassword">
                     </div>
                 </div>
                 <br><button type="submit" class="btn btn-primary btn-lg">Register</button>
