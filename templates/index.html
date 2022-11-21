@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 {% block title %}{{title}}{% endblock %}
 {% block content %}
-<h1> About WeBalance </h1>
+<container class="container text-center">
+    <div>
+        <img class="img-fluid" src="{{ url_for('static', filename='WeBalance-Logo.png') }}" style="max-height: 200px"></img>
+    </div>
+    <div class="card text-center mx-auto" style="max-width: 50rem;">
+        <div class="card-body">
+          <h1 class="card-title">About Us</h1>
+          <p class="card-text">ADD TO/REPLACE CONTENT HERE<br>e.g. "We strive to achieve a good work-life balance" + more info</p>
+        </div>
+    </div>
+</container>
 {% endblock %}
