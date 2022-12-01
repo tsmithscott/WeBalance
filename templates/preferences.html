@@ -3,7 +3,64 @@
 {% block content %}
 <container class="container text-center">
     <div>
-    <h1>Preferences</h1>
+        <style>
+            table, tr, td, th {
+                border: solid 1.5px black;
+                border-collapse: collapse;
+                text-align: center;
+                padding: 5px;
+            }
+            </style>
+            
+            
+            <div class="content" style="text-align: center;">
+                <h1 style="text-align: center;">Preferences</h1>
+            
+                {% if preferences|length < 1 %}
+                <h4 style="text-align: center;">You have no prefereces. Create one below!</h4>
+                {% else %}
+            
+                <p>
+                    <table>
+                        <tr>
+                            <th>What is being limited?</th>
+                            <th>Maximum amount</th>
+                            <th>Edit</th>
+                        </tr>
+            
+                        {% for preference in preferences %}
+                        <tr>
+                            <td>{{ preference.task }}</td>
+                            <td>{{ preference.max }}</td>
+                            <td style="padding-left: 7.5px; padding-right: 7.5px; padding-top: 5px; padding-bottom: 5px;">
+                                <a href="/delete/{{preference.id}}">Delete</a>
+                                <br>
+                                <a href="/update/{{preference.id}}">Update</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </p>
+                {% endif %}
+            
+                <form action="/" method="POST">
+                    <div class="input">
+                        <div class="preference input">
+                            <label for="name">Enter a new preference: </label>
+                            <input type="text" name="task">
+            
+                            <label for="name">Limit: </label>
+                            <input type="text" name="max">
+                        </div>
+                    
+                    
+                    
+                        <div class="submit button" style="padding: 8px;">
+                            <input type="submit" value="Add preference">
+                        </div>
+                    </div>
+                </form> 
+            </div>
     </div>
 </container>
 {% endblock %}

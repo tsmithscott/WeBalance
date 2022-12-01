@@ -26,3 +26,12 @@ class Company(db.Model):
         self.name = name
         self.surname = surname
         self.email = email
+
+
+class Preferences(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    task = db.Column(db.String(200), nullable=False)
+    max = db.Column(db.Float, nullable=False)
+
+    def __repr__(self):
+        return '<Task %r>' % self.id

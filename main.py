@@ -6,8 +6,10 @@ app = Flask(__name__)
 app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 db.init_app(app)
 
-from models import User, Company
+from models import User, Company, Preferences
 
+with app.app_context():
+    db.create_all()
 
 @app.route("/")
 def home():
@@ -31,7 +33,50 @@ def dashboard():
 
 @app.route("/preferences", methods=['GET', 'POST'])
 def preferences():
-    return render_template("preferences.html", title="Preferences")
+    if request.method == 'POST':
+        new_task = request.form['task']
+        new_max = request.form['max']
+        new_preference = Preferences(task = new_task, max = new_max)
+
+        try:
+            db.session.add(new_preference)
+            db.session.commit()
+            return redirect('#')
+        except:
+            return 'There was an issue adding your preference!'
+    else:
+        preferences = Preferences.query.order_by(Preferences.task).all()
+        return render_template('preferences.html', preferences = preferences , title="Preferences")
+
+
+@app.route('/preferences/delete/<int:id>')
+def delete(id):
+    task_to_delete = Preferences.query.get_or_404(id)
+
+    try:
+        db.session.delete(task_to_delete)
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'There was an error deleting thats preference!'
+
+
+@app.route('/preferences/update/<int:id>', methods=['POST', 'GET'])
+def update(id):
+    preference = Preferences.query.get_or_404(id)
+
+    if request.method == 'POST':
+        preference.task = request.form['task']
+        preference.max = request.form['max']
+
+        try:
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'There was an issue updating the preference.'
+
+    else:
+        return render_template('preferences.html', preference = preference, title="Preferences")
 
 
 @app.route("/about")
