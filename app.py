@@ -11,6 +11,7 @@ from models import User, Company, Preferences
 with app.app_context():
     db.create_all()
 
+
 @app.route("/")
 def home():
     return redirect(url_for("about"))
@@ -56,9 +57,9 @@ def delete(id):
     try:
         db.session.delete(task_to_delete)
         db.session.commit()
-        return redirect('/')
+        return redirect(url_for('/'))
     except:
-        return 'There was an error deleting thats preference!'
+        return 'There was an error deleting that preference!'
 
 
 @app.route('/preferences/update/<int:id>', methods=['POST', 'GET'])
@@ -71,7 +72,7 @@ def update(id):
 
         try:
             db.session.commit()
-            return redirect('/')
+            return redirect(url_for('/'))
         except:
             return 'There was an issue updating the preference.'
 
