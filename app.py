@@ -50,18 +50,6 @@ def preferences():
         return render_template('preferences.html', preferences = preferences , title="Preferences")
 
 
-@app.route('/preferences/delete/<int:id>')
-def delete(id):
-    task_to_delete = Preferences.query.get_or_404(id)
-
-    try:
-        db.session.delete(task_to_delete)
-        db.session.commit()
-        return redirect(url_for('/'))
-    except:
-        return 'There was an error deleting that preference!'
-
-
 @app.route('/preferences/update/<int:id>', methods=['POST', 'GET'])
 def update(id):
     preference = Preferences.query.get_or_404(id)
