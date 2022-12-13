@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
+
 db = SQLAlchemy()
 
 
@@ -24,7 +25,7 @@ class Companies(db.Model):
 
 
 class Users(db.Model):
-    id = db.Column('user_id', db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key = True)
     email = db.Column(db.String(50))
     password = db.Column(db.String(50))
     firstname = db.Column(db.String(50))
@@ -40,9 +41,12 @@ class Users(db.Model):
 
 class Preferences(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'),
-                        nullable=False)
+    task = db.Column(db.String(50), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     max = db.Column(db.Float, nullable=False)
-
-
+    
+    def __init__(self, task, user_id, max):
+        self.user_id = user_id
+        self.task = task
+        self.max = max
 

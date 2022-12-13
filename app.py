@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 db.init_app(app)
 
-from models import User, Company, Preferences
+from models import Users, Companies, Preferences
 
 with app.app_context():
     db.create_all()
@@ -60,7 +60,7 @@ def update(id):
 
         try:
             db.session.commit()
-            return redirect(url_for('/'))
+            return redirect(url_for("home"))
         except:
             return 'There was an issue updating the preference.'
 
@@ -81,4 +81,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5001)
