@@ -9,27 +9,32 @@
         <div class="container-sm">
             <form action="/login" method="POST">
                 <span class="text-nowrap">
-                    <div class="mb3">
-                        <label for="inputEmail" class="col-sm-6 col-form-label">Email</label>
-                        <div class="d-flex">
-                        <input type="email" class="form-control" id="inputEmail">
-                        </div>
+                    <div class="form-floating mb-3" style="margin-top: 2rem">
+                        <input type="email" name="email" class="form-control" id="email" placeholder="john@johndoe.com">
+                        <label for="email">Email</label>
                     </div>
-                    <div class="mb3">
-                        <label for="inputPassword" class="col-sm-6 col-form-label">Password</label>
-                        <div class="d-flex">
-                        <input type="password" class="form-control" id="inputPassword">
-                        </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" name="password" class="form-control" id="password" placeholder="123456">
+                        <label for="password">Password</label>
                     </div>
                     <br><button type="submit" class="btn btn-primary btn-lg">Sign in</button>
                 </span>
             </form>
     
-            <br><br><label>No account?</label><br>
+            <br><label>No account?</label><br>
             <a class="btn btn-secondary" href="/signup" role="button">Sign Up</a>
         </div>
 
     </div>
 </div>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
 </container>
 {% endblock %}

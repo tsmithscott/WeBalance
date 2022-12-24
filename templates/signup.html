@@ -2,51 +2,63 @@
 {% block title %}{{title}}{% endblock %}
 {% block content %}
 <container class="container text-center">
-<div class="card mx-auto" style="width: 24rem; margin-top: 5rem;">
+<div class="card mx-auto" style="width: 30rem; margin-top: 2rem;">
     <div class="card-body">
         <h1 class="card-title">Create Account</h1>
 
         <div class="container-sm">
-            <form action="/signup" method="POST">
+            <form id="form" action="{{ url_for('signup') }}" method="POST">
                 <span class="text-nowrap">
-                    <div class="mb3">
-                        <label for="inputEmail" class="col-sm-6 col-form-label">Work Email</label>
-                        <div class="d-flex">
-                        <input type="email" class="form-control" id="inputEmail">
-                        </div>
+                    <div class="form-floating mb-3" style="margin-top: 2rem">
+                        <input type="text" name="firstname" class="form-control" id="firstname" placeholder="John">
+                        <label for="firstname">First Name</label>
                     </div>
-                    <div class="mb3">
-                        <label for="inputCompany" class="col-sm-6 col-form-label">Company</label>
-                        <div class="d-flex">
-                            <select class="form-select" id="companyIDSelector" style="text-align-last:center;">
-                                <option selected>Select...</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </select>
-                        </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" name="surname" class="form-control" id="surname" placeholder="Doe">
+                        <label for="surname">Surname</label>
                     </div>
-                    <div class="mb3">
-                        <label for="inputPassword" class="col-sm-6 col-form-label">Password</label>
-                        <div class="d-flex">
-                        <input type="password" class="form-control" id="inputPassword">
-                        </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" name="email" class="form-control" id="email" placeholder="john@johndoe.com">
+                        <label for="email">Work Email</label>
                     </div>
-                    <div class="mb3">
-                        <label for="inputRepeatPassword" class="col-sm-6 col-form-label">Repeat Password</label>
-                        <div class="d-flex">
-                        <input type="password" class="form-control" id="inputRepeatPassword">
-                        </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" name="company" id="company" style="text-align-last:center;" placeholder="Doe & Co.">
+                            <option selected>Select...</option>
+                            {% for company in companies %}
+                            <option value="{{company.id}}">{{company.name}}</option>
+                            {% endfor %}
+                            <option value="1">Static test item 1</option>
+                            <option value="2">Static test item 2</option>
+                            <option value="3">Static test item 3</option>
+                        </select>
+                        <label for="company">Company</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" name="password" class="form-control" id="password" placeholder="123456">
+                        <label for="password">Password</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" name="confirm_password" class="form-control" id="confirm_password" placeholder="123456">
+                        <label for="confirm_password">Confirm Password</label>
                     </div>
                     <br><button type="submit" class="btn btn-primary btn-lg">Register</button>
                 </span>
             </form>
         
             <br><br><label>Already have an account?</label><br>
-            <a class="btn btn-secondary" href="/login" role="button">Login</a>
+            <a class="btn btn-secondary" href="{{ url_for('login') }}" role="button">Login</a>
         </div>
 
     </div>
 </div>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
 </container>
 {% endblock %}
