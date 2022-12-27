@@ -25,11 +25,8 @@
                         <select class="form-select" name="company" id="company" style="text-align-last:center;" placeholder="Doe & Co.">
                             <option selected>Select...</option>
                             {% for company in companies %}
-                            <option value="{{company.id}}">{{company.name}}</option>
+                                <option value="{{ company.id }}">{{company.name}}</option>
                             {% endfor %}
-                            <option value="1">Static test item 1</option>
-                            <option value="2">Static test item 2</option>
-                            <option value="3">Static test item 3</option>
                         </select>
                         <label for="company">Company</label>
                     </div>
@@ -41,6 +38,12 @@
                         <input type="password" name="confirm_password" class="form-control" id="confirm_password" placeholder="123456">
                         <label for="confirm_password">Confirm Password</label>
                     </div>
+                    <div class="form-check">
+                        <input class="form-check-input" name="employer_check" type="checkbox" value="1" id="employer_check">
+                        <label class="form-check-label" for="employer_check">
+                            Are you an employer?
+                        </label>
+                    </div>
                     <br><button type="submit" class="btn btn-primary btn-lg">Register</button>
                 </span>
             </form>
@@ -48,17 +51,7 @@
             <br><br><label>Already have an account?</label><br>
             <a class="btn btn-secondary" href="{{ url_for('login') }}" role="button">Login</a>
         </div>
-
     </div>
 </div>
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul class=flashes>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
 </container>
 {% endblock %}

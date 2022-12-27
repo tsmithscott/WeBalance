@@ -3,11 +3,10 @@
 {% block content %}
 <container class="container text-center">
     <div class="content" style="text-align: center;">
-        <h1 style="text-align: center;">View/Update Preferences</h1>
+        <h1 style="text-align: center;color:red;">!!! YET TO BE IMPLEMENTED !!!</h1>
+        <h1 style="text-align: center;">Add Records</h1>
         {% if current_user.is_employer %}
             <h5 style="text-align: center;"><i>(Change the default for your employees)</i></h5>
-        {% else %}
-            <h5 style="text-align: center;"><i>Note: 'default' is set by your employer</i></h5>
         {% endif %}
         <div class="container-sm text-center" style="margin-top: 2rem;">
             <form action="{{ url_for('preferences') }}" method="POST">
@@ -16,26 +15,22 @@
                         <table class="table table-responsive table-striped">
                             <thead>
                             <tr>
-                                <th scope="col">Preference Name</th>
-                                <th scope="col">Current Limit</th>
-                                <th scope="col">New Limit</th>
+                                <th scope="col">Criteria</th>
+                                <th scope="col">Value</th>
                             </tr>
                             </thead>
                             <tbody>
                                     <tr>
-                                        <td>Weekly hours <i>(default={{ employer_default.max_hours_weekly }})</i></th>
-                                        <td>{{ preferences.max_hours_weekly }}</td>
-                                        <td><input type="number" class="form-control" name="weekly_hours"></td>
+                                        <td># of Hours</th>
+                                        <td><input type="number" class="form-control" name="hours"></td>
                                     </tr>
                                     <tr>
-                                        <td>Daily Emails <i>(default={{ employer_default.max_emails_daily }})</i></th>
-                                        <td>{{ preferences.max_emails_daily }}</td>
-                                        <td><input type="number" class="form-control" name="daily_emails"></td>
+                                        <td># of Emails</th>
+                                        <td><input type="number" class="form-control" name="emails"></td>
                                     </tr>
                                     <tr>
-                                        <td>Daily Calls <i>(default={{ employer_default.max_calls_daily }})</i></th>
-                                        <td>{{ preferences.max_calls_daily }}</td>
-                                        <td><input type="number" class="form-control" name="daily_calls"></td>
+                                        <td># of Calls</th>
+                                        <td><input type="number" class="form-control" name="calls"></td>
                                     </tr>
                             </tbody>
                         </table>

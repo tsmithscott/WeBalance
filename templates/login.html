@@ -22,19 +22,9 @@
             </form>
     
             <br><label>No account?</label><br>
-            <a class="btn btn-secondary" href="/signup" role="button">Sign Up</a>
+            <a class="btn btn-secondary" href="{{ url_for('signup')}}" role="button">Sign Up</a>
         </div>
-
     </div>
 </div>
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul class=flashes>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
 </container>
 {% endblock %}
