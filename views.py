@@ -1,4 +1,5 @@
-import datetime as dt
+from datetime import datetime as dt
+from datetime import timezone
 
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required, login_user, logout_user, current_user
@@ -11,15 +12,6 @@ from models import Companies, Employees, Employers, Preferences, Records, Users
 @login_manager.user_loader
 def load_user(user_id):
     return Users.query.get(user_id)
-
-
-@app.route("/")
-def index():
-    # If user is logged in, redirect to dashboard
-    if current_user.is_authenticated:
-        return redirect(url_for("dashboard"))
-    else:
-        return redirect(url_for("login"))
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -98,13 +90,11 @@ def signup():
     return render_template("signup.html", title="Create an Account", companies=Companies.query.all())
 
 
+@app.route("/")
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    if current_user.is_authenticated:
-        return render_template("dashboard.html", title="Dashboard")
-    else:
-        return redirect(url_for("login"))
+    return render_template("dashboard.html", title="Dashboard")
 
 
 @app.route("/preferences", methods=['GET', 'POST'])
@@ -147,16 +137,33 @@ def preferences():
         return render_template('preferences.html', preferences=preferences, employer_default=employer_default, title="Preferences")
 
 
-@app.route("/records")
+@app.route("/records", methods=['GET', 'POST'])
 @login_required
 def records():
     if not current_user.is_employer:
         if request.method == 'POST':
-            date = request.form['date']
-            start_time = request.form['start-time']
-            end_time = request.form['end-time']
+            date = dt.strptime(request.form['date'], '%Y-%m-%d').date()
+            inputted_start_time = dt.strptime(request.form['start-time'], '%H:%M')
+            inputted_end_time = dt.strptime(request.form['end-time'], '%H:%M')
+            
+            start_time = dt.combine(date, inputted_start_time.time(), tzinfo=timezone.utc)
+            end_time = dt.combine(date, inputted_end_time.time(), tzinfo=timezone.utc)
             calls = request.form['calls']
             emails = request.form['emails']
+            employee_id = Employees.query.filter_by(user_id=current_user.id).one().id
+            
+            new_record = Records(employee_id=employee_id, 
+                                 start_time=start_time, 
+                                 end_time=end_time, 
+                                 emails_sent=emails, 
+                                 calls_made=calls)
+            try:
+                db.session.add(new_record)
+                db.session.commit()
+                flash('Record added! View it on the dashboard.', 'success')
+                return redirect(url_for('records'))
+            except:
+                flash('There was an issue adding the record!', 'error')
         return render_template("records.html", title="Records")
     else:
         flash("You must be an employee to add records!", "error")

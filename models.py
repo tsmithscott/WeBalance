@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from flask_login import UserMixin
 
 from app import db
@@ -81,15 +79,13 @@ class Users(UserMixin, db.Model):
 class Records(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     emails_sent = db.Column(db.Integer, nullable=False)
     calls_made = db.Column(db.Integer, nullable=False)
     
-    def __init__(self, employee_id, date, start_time, end_time, emails_sent, calls_made):
+    def __init__(self, employee_id, start_time, end_time, emails_sent, calls_made):
         self.employee_id = employee_id
-        self.date = date
         self.start_time = start_time
         self.end_time = end_time
         self.emails_sent = emails_sent

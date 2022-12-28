@@ -3,11 +3,7 @@
 {% block content %}
 <container class="container text-center">
     <div class="content" style="text-align: center;">
-        <h1 style="text-align: center;color:red;">!!! YET TO BE IMPLEMENTED !!!</h1>
         <h1 style="text-align: center;">Add Records</h1>
-        {% if current_user.is_employer %}
-            <h5 style="text-align: center;"><i>(Change the default for your employees)</i></h5>
-        {% endif %}
         <div class="container-sm text-center" style="margin-top: 2rem;">
             <form action="{{ url_for('records') }}" method="POST">
                 <div class="row justify-content-center">
@@ -41,11 +37,11 @@
                                 </tr>
                                 <tr>
                                     <td># of Emails</th>
-                                    <td><input type="number" class="form-control" name="emails" required></td>
+                                    <td><input type="number" class="form-control" name="emails" min="0" required></td>
                                 </tr>
                                 <tr>
                                     <td># of Calls</th>
-                                    <td><input type="number" class="form-control" name="calls" required></td>
+                                    <td><input type="number" class="form-control" name="calls" min="0" required></td>
                                 </tr>
                             </tbody>
                         </table>
