@@ -7,14 +7,14 @@
         <h1 class="card-title">Login</h1>
       
         <div class="container-sm">
-            <form action="/login" method="POST">
+            <form action="{{ url_for('login') }}" method="POST">
                 <span class="text-nowrap">
                     <div class="form-floating mb-3" style="margin-top: 2rem">
-                        <input type="email" name="email" class="form-control" id="email" placeholder="john@johndoe.com">
+                        <input type="email" name="email" class="form-control" id="email" placeholder="john@johndoe.com" required>
                         <label for="email">Email</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="password" name="password" class="form-control" id="password" placeholder="123456">
+                        <input type="password" name="password" class="form-control" id="password" placeholder="123456" required>
                         <label for="password">Password</label>
                     </div>
                     <br><button type="submit" class="btn btn-primary btn-lg">Sign in</button>

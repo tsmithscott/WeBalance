@@ -1,8 +1,11 @@
-from app import app, db, login_manager
+import datetime as dt
+
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required, login_user, logout_user, current_user
-from models import Companies, Employees, Employers, Preferences, Records, Users
 from werkzeug.security import generate_password_hash, check_password_hash
+
+from app import app, db, login_manager
+from models import Companies, Employees, Employers, Preferences, Records, Users
 
 
 @login_manager.user_loader
@@ -55,27 +58,42 @@ def signup():
                 
                 try:
                     db.session.add(new_user)
-                    db.session.add
                     db.session.commit()
-                    new_user_preferences = Preferences(new_user.id, max_hours_weekly=32, max_emails_daily=25, max_calls_daily=10)
-                    db.session.add(new_user_preferences)
-                    db.session.commit()
-                    
                     company = request.form['company']
-                    employer = Employers.query.filter_by(company_id=company).one()
-                    if is_employer == 1:
-                        new_employer = Employers(user_id=new_user.id, company_id=company)
-                        db.session.add(new_employer)
-                        db.session.commit()
-                    elif is_employer == 0:
-                        new_employee = Employees(user_id=new_user.id, employer_id=employer.id)
-                        db.session.add(new_employee)
-                        db.session.commit()
+                    if company != 'none':
+                        employer = Employers.query.filter_by(company_id=company).first()
+                        employer_default_preferences = Preferences.query.filter_by(user_id=employer.user_id).first()
+                        if is_employer == 1:
+                            new_employer = Employers(user_id=new_user.id, 
+                                                    company_id=company)
+                            db.session.add(new_employer)
+                            db.session.commit()
+                            # Create default preferences for new employer
+                            new_user_preferences = Preferences(user_id=new_user.id, 
+                                                            max_hours_weekly=32, 
+                                                            max_emails_daily=25, 
+                                                            max_calls_daily=10)
+                            db.session.add(new_user_preferences)
+                            db.session.commit()
+                        elif is_employer == 0:
+                            new_employee = Employees(user_id=new_user.id, 
+                                                    employer_id=employer.id)
+                            db.session.add(new_employee)
+                            db.session.commit()
+                            # Create default preferences for new employee based on employer's preferences
+                            new_user_preferences = Preferences(user_id=new_user.id, 
+                                                            max_hours_weekly=employer_default_preferences.max_hours_weekly, 
+                                                            max_emails_daily=employer_default_preferences.max_emails_daily, 
+                                                            max_calls_daily=employer_default_preferences.max_calls_daily)
+                            db.session.add(new_user_preferences)
+                            db.session.commit()
+                    else:
+                        raise Exception()
                         
                     flash('Account created! Please login.', 'success')
                     return redirect(url_for('login'))
                 except:
-                    flash('There was an issue creating your account!', 'error')
+                    flash('There was an issue creating your account! Please make sure you fill all fields.', 'error')
                     return redirect(url_for('signup'))
     return render_template("signup.html", title="Create an Account", companies=Companies.query.all())
 
@@ -109,9 +127,12 @@ def preferences():
         # Fetch user preferences from the database
         preferences = Preferences.query.filter_by(user_id=current_user.id).first()
         # Fetch user's employer default preferences from the database
+        # ... If user is an employee, set employer_default to employer's preferences
         if not current_user.is_employer:
-            employer_user_id = Employees.query.filter_by(user_id=current_user.id).first().employer_id
+            employer_id = Employees.query.filter_by(user_id=current_user.id).first().employer_id
+            employer_user_id = Employers.query.filter_by(user_id=employer_id).first().user_id
             employer_default = Preferences.query.filter_by(user_id=employer_user_id).first()
+        # If user is an employer, set employer_default to user's preferences
         else:
             employer_default=preferences
         return render_template('preferences.html', preferences=preferences, employer_default=employer_default, title="Preferences")
@@ -121,6 +142,12 @@ def preferences():
 @login_required
 def records():
     if not current_user.is_employer:
+        if request.method == 'POST':
+            date = request.form['date']
+            start_time = request.form['start-time']
+            end_time = request.form['end-time']
+            calls = request.form['calls']
+            emails = request.form['emails']
         return render_template("records.html", title="Records")
     else:
         flash("You must be an employee to add records!", "error")
@@ -131,6 +158,31 @@ def records():
 def about():
     # Populate index.html with info/animations/pictures
     return render_template("index.html", title="About Us")
+
+@app.route("/account", methods=['GET', 'POST'])
+@login_required
+def account():
+    if request.method == 'POST':
+        if request.form.get('deletion_check'):
+            # Delete user from database and all associated data
+            if current_user.is_employer:
+                employer_id = Employers.query.filter_by(user_id=current_user.id).first().id
+                Employees.query.filter_by(employer_id=employer_id).update(dict(employer_id=-1))
+                Employers.query.filter_by(user_id=current_user.id).delete()
+            else:
+                user_employee_id = Employees.query.filter_by(user_id=current_user.id).first().id
+                Records.query.filter_by(employee_id=user_employee_id).delete()
+                Employees.query.filter_by(user_id=current_user.id).delete()
+            Preferences.query.filter_by(user_id=current_user.id).delete()
+            Users.query.filter_by(id=current_user.id).delete()
+            db.session.commit()
+        else:
+            flash("You must confirm to delete your account & data!", "error")
+            return redirect(url_for('account'))
+        
+        flash("Your account has been deleted!", "success")
+        return redirect(url_for('logout'))
+    return render_template("account.html", title="Account")
 
 
 @app.route("/logout")

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block content %}
+<container class="container text-center">
+    <div>
+        <h1>Account</h1>
+        <p>To download your data, contact us at:<br /> fake@email.com</p><br />
+        <h3>What data is stored and how is it used?</h3>
+        <p>
+            Your full name and work email address are the only personal details stored.<br />
+            Your data is only used to provide a personalised experience for you and for your employer to view anonymous company statistics.
+        </p>
+    </div>
+    <div>
+        <br>
+        <h3>Delete your account</h3>
+        <form action="{{ url_for('account') }}" method="POST">
+            <div class="container text-center">
+                <p>Deleting your account will remove all your data from our servers.</p>
+                <p>This action cannot be undone.</p>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-danger" style="margin-top:1rem">Delete</button>
+                    <div class="form-check">
+                        <input class="form-check-input" name="deletion_check" type="checkbox" value="1" id="deletion_check">
+                        <label class="form-check-label" for="deletion_check">
+                            Confirm Delete
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</container>
+{% endblock %}

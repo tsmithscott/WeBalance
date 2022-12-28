@@ -50,6 +50,7 @@
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li><button id="theme-button" class="dropdown-item" type="button">Toggle Theme</button></li>
                   {% if current_user.is_authenticated %}
+                    <li><a class="dropdown-item" type="button" href="{{ url_for('account')}}" role="button">Account</a></li>
                     <li><a class="dropdown-item" type="button" href="{{ url_for('logout')}}" role="button">Logout</a></li>
                   {% endif %}
                 </ul>
