@@ -11,7 +11,7 @@
         <div class="container-sm text-center" style="margin-top: 2rem;">
             <form action="{{ url_for('preferences') }}" method="POST">
                 <div class="row justify-content-center">
-                    <div class="col-sm-9">
+                    <div class="col-sm-6">
                         <table class="table table-responsive table-striped">
                             <thead>
                             <tr>
@@ -20,25 +20,40 @@
                             </tr>
                             </thead>
                             <tbody>
-                                    <tr>
-                                        <td># of Hours</th>
-                                        <td><input type="number" class="form-control" name="hours"></td>
-                                    </tr>
-                                    <tr>
-                                        <td># of Emails</th>
-                                        <td><input type="number" class="form-control" name="emails"></td>
-                                    </tr>
-                                    <tr>
-                                        <td># of Calls</th>
-                                        <td><input type="number" class="form-control" name="calls"></td>
-                                    </tr>
+                                <tr>
+                                    <td>Date</th>
+                                    <td><input type="date" class="form-control" name="date"></td>
+                                </tr>
+                                <tr>
+                                    <td>Start Time / End Time</th>
+                                    <td>
+                                        <div class="container text-center">
+                                            <div class="row">
+                                              <div class="col">
+                                                <input type="time" class="form-control" name="start-time">
+                                              </div>
+                                              <div class="col">
+                                                <input type="time" class="form-control" name="end-time">
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td># of Emails</th>
+                                    <td><input type="number" class="form-control" name="emails"></td>
+                                </tr>
+                                <tr>
+                                    <td># of Calls</th>
+                                    <td><input type="number" class="form-control" name="calls"></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <input class="btn btn-primary" type="submit" value="Update">
+                        <input class="btn btn-primary" type="submit" value="Add">
                     </div>
                 </div>
             </form>
