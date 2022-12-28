@@ -12,7 +12,7 @@
         <div class="container-sm text-center" style="margin-top: 2rem;">
             <form action="{{ url_for('preferences') }}" method="POST">
                 <div class="row justify-content-center">
-                    <div class="col-sm-9">
+                    <div class="col-sm-6">
                         <table class="table table-responsive table-striped">
                             <thead>
                             <tr>
@@ -25,17 +25,17 @@
                                     <tr>
                                         <td>Weekly hours <i>(default={{ employer_default.max_hours_weekly }})</i></th>
                                         <td>{{ preferences.max_hours_weekly }}</td>
-                                        <td><input type="number" class="form-control" name="weekly_hours"></td>
+                                        <td><input type="number" class="form-control" name="weekly_hours" value="0" min="0" max="50"></td>
                                     </tr>
                                     <tr>
                                         <td>Daily Emails <i>(default={{ employer_default.max_emails_daily }})</i></th>
                                         <td>{{ preferences.max_emails_daily }}</td>
-                                        <td><input type="number" class="form-control" name="daily_emails"></td>
+                                        <td><input type="number" class="form-control" name="daily_emails" value="0" min="0" max="100"></td>
                                     </tr>
                                     <tr>
                                         <td>Daily Calls <i>(default={{ employer_default.max_calls_daily }})</i></th>
                                         <td>{{ preferences.max_calls_daily }}</td>
-                                        <td><input type="number" class="form-control" name="daily_calls"></td>
+                                        <td><input type="number" class="form-control" name="daily_calls" value="0" min="0" max="100"></td>
                                     </tr>
                             </tbody>
                         </table>

@@ -110,11 +110,21 @@ def dashboard():
 @app.route("/preferences", methods=['GET', 'POST'])
 @login_required
 def preferences():
-    preferences = Preferences.query.filter_by(user_id=current_user.id).first()
+    # Fetch user's preferences from the database
+    preferences = Preferences.query.filter_by(user_id=current_user.id).one()
+    
+    # If data is entered, update preferences
     if request.method == 'POST':
-        preferences.max_hours_weekly = request.form['weekly_hours']
-        preferences.max_emails_daily = request.form['daily_emails']
-        preferences.max_calls_daily = request.form['daily_calls']
+        hours = request.form['weekly_hours']
+        emails = request.form['daily_emails']
+        calls = request.form['daily_calls']
+        if hours != "0":
+            preferences.max_hours_weekly = hours
+        if emails != "0":
+            preferences.max_emails_daily = emails
+        if calls != "0":
+            preferences.max_calls_daily = calls
+
         try:
             db.session.commit()
             flash('Preferences updated!', 'success')
@@ -123,15 +133,14 @@ def preferences():
             flash('There was an issue updating your preferences!', 'error')
         return redirect(url_for('preferences'))
     
+    # If no data is entered, display preferences
     else:
-        # Fetch user preferences from the database
-        preferences = Preferences.query.filter_by(user_id=current_user.id).first()
-        # Fetch user's employer default preferences from the database
-        # ... If user is an employee, set employer_default to employer's preferences
+        # If user is an employee, set employer_default to employer's preferences
         if not current_user.is_employer:
-            employer_id = Employees.query.filter_by(user_id=current_user.id).first().employer_id
-            employer_user_id = Employers.query.filter_by(user_id=employer_id).first().user_id
-            employer_default = Preferences.query.filter_by(user_id=employer_user_id).first()
+            employer_id = Employees.query.filter_by(user_id=current_user.id).one().employer_id
+            employer_user_id = Employers.query.filter_by(user_id=employer_id).one().user_id
+            employer_default = Preferences.query.filter_by(user_id=employer_user_id).one()
+            
         # If user is an employer, set employer_default to user's preferences
         else:
             employer_default=preferences
