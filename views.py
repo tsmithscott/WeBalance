@@ -34,14 +34,22 @@ def login():
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        if not Users.query.filter_by(email=request.form['email']).one():
+        # Check if user already exists
+        if not Users.query.filter_by(email=request.form['email']).first():
+            company = request.form['company']
             if request.form['password'] != request.form['confirm_password']:
                 flash('Passwords do not match!', 'error')
                 return redirect(url_for('signup'))
             else:
                 if request.form.get('employer_check'):
+                    if Employers.query.filter_by(company_id=company).first():
+                        flash('Company already has an employer!', 'error')
+                        return redirect(url_for('signup'))
                     is_employer = 1
                 else:
+                    if not Employers.query.filter_by(company_id=company).first():
+                        flash('Company does not have an employer! Your employer must register first.', 'error')
+                        return redirect(url_for('signup'))
                     is_employer = 0
                 
                 new_user = Users(email=request.form['email'],
@@ -53,15 +61,13 @@ def signup():
                 try:
                     db.session.add(new_user)
                     db.session.commit()
-                    company = request.form['company']
                     if company != 'none':
-                        employer = Employers.query.filter_by(company_id=company).first()
-                        employer_default_preferences = Preferences.query.filter_by(user_id=employer.user_id).first()
                         if is_employer == 1:
+                            # Create new employer
                             new_employer = Employers(user_id=new_user.id, 
                                                     company_id=company)
                             db.session.add(new_employer)
-                            db.session.commit()
+
                             # Create default preferences for new employer
                             new_user_preferences = Preferences(user_id=new_user.id, 
                                                             max_hours_weekly=32, 
@@ -70,6 +76,8 @@ def signup():
                             db.session.add(new_user_preferences)
                             db.session.commit()
                         elif is_employer == 0:
+                            employer = Employers.query.filter_by(company_id=company).first()
+                            employer_default_preferences = Preferences.query.filter_by(user_id=employer.user_id).first()
                             new_employee = Employees(user_id=new_user.id, 
                                                     employer_id=employer.id)
                             db.session.add(new_employee)
@@ -95,6 +103,40 @@ def signup():
     return render_template("signup.html", title="Create an Account", companies=Companies.query.all())
 
 
+@app.route("/company", methods=['GET', 'POST'])
+def company():
+    if request.method == 'POST':
+        # Check if company already exists
+        if not Companies.query.filter_by(name=request.form['name']).first():
+            # Create new company
+            new_company = Companies(name=request.form['name'],
+                                    address_line_1=request.form['address_line_1'],
+                                    postcode=request.form['postcode'],
+                                    city=request.form['city'],
+                                    country=request.form['country'])
+            
+            # Check if address line 2 is empty
+            address_line_2 = request.form['address_line_2']
+            if address_line_2:
+                new_company.address_line_2 = address_line_2
+            else:
+                new_company.address_line_2 = None
+                
+            try:
+                # Add new company to database
+                db.session.add(new_company)
+                db.session.commit()
+                flash('Company created! Please create an employer account.', 'success')
+                return redirect(url_for('signup'))
+            except:
+                flash('There was an issue creating your company!', 'error')
+                return redirect(url_for('company'))
+        else:
+            flash('Company already exists!', 'error')
+            return redirect(url_for('company'))
+    return render_template("company.html", title="Register Company")
+
+
 @app.route("/")
 @app.route("/dashboard")
 @login_required
@@ -102,25 +144,24 @@ def dashboard():
     # If user is an employee, fetch all records for that user
     if not current_user.is_employer:
         employee_id = Employees.query.filter_by(user_id=current_user.id).first().id
-        records = Records.query.filter(Records.employee_id==employee_id)
+        records = Records.query.filter_by(employee_id=employee_id).order_by(desc(Records.start_time)).all()
+        company = Companies.query.filter_by(id=Employers.query.filter_by(id=Employees.query.filter_by(user_id=current_user.id).first().employer_id).first().company_id).first()
         
     # If user is an employer, fetch all records for their employees
     else:
-        employer_id = Employers.query.filter_by(user_id=current_user.id).first().id
+        employees = Employees.query.filter_by(employer_id=Employers.query.filter_by(user_id=current_user.id).first().id).all()
         employee_ids = []
-        for employee in Employees.query.filter_by(employer_id=employer_id).all():
+        for employee in employees:
             employee_ids.append(employee.id)
-            
-        for employee_id in employee_ids:
-            records = Records.query.filter(Records.employee_id.in_(employee_ids))
-        
-    records = records.order_by(desc(Records.start_time)).all()
+        records = Records.query.filter(Records.employee_id.in_(employee_ids)).order_by(desc(Records.start_time)).all()
+        company = Companies.query.filter_by(id=Employers.query.filter_by(user_id=current_user.id).first().company_id).first()
+
     hours = []
     for record in records:
         # Calculate total hours worked and add to a list
-        hours.append(round(timedelta.total_seconds(record.end_time - record.start_time) / 3600, 1)) 
-            
-    return render_template("dashboard.html", title="Dashboard", hours=hours, records=records)
+        hours.append(round(timedelta.total_seconds(record.end_time - record.start_time) / 3600, 1))
+
+    return render_template("dashboard.html", title="Dashboard", hours=hours, records=records, company=company)
 
 
 @app.route("/preferences", methods=['GET', 'POST'])
@@ -154,12 +195,12 @@ def preferences():
         # If user is an employee, set employer_default to employer's preferences
         if not current_user.is_employer:
             employer_id = Employees.query.filter_by(user_id=current_user.id).one().employer_id
-            employer_user_id = Employers.query.filter_by(user_id=employer_id).one().user_id
+            employer_user_id = Employers.query.filter_by(id=employer_id).one().user_id
             employer_default = Preferences.query.filter_by(user_id=employer_user_id).one()
             
         # If user is an employer, set employer_default to user's preferences
         else:
-            employer_default=preferences
+            employer_default = preferences
         return render_template('preferences.html', preferences=preferences, employer_default=employer_default, title="Preferences")
 
 

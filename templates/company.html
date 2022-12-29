@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block content %}
+<container class="container text-center">
+    <div class="card mx-auto" style="width: 30rem; margin-top: 1rem;">
+        <div class="card-body">
+            <h1 class="card-title">Register Company</h1>
+            <div class="container-sm">
+                <form id="form" action="{{ url_for('company') }}" method="POST">
+                    <span class="text-nowrap">
+                        <div class="form-floating mb-3" style="margin-top: 2rem">
+                            <input type="text" name="name" class="form-control" id="name" placeholder="Apple" required>
+                            <label for="name">Company Name*</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" name="address_line_1" class="form-control" id="address_line_1" placeholder="3 Jewel Lane" required>
+                            <label for="address_line_1">Address Line 1*</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" name="address_line_2" class="form-control" id="address_line_2" placeholder="Flat 51">
+                            <label for="address_line_2">Address Line 2 </label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" name="postcode" class="form-control" id="postcode" placeholder="SE1 4BZ" required>
+                            <label for="postcode">Postcode*</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" name="city" class="form-control" id="city" placeholder="London" required>
+                            <label for="city">City*</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" name="country" class="form-control" id="country" placeholder="England" required>
+                            <label for="country">Country*</label>
+                        </div>
+                        <br><button type="submit" class="btn btn-primary btn-lg">Register</button>
+                    </span>
+                </form>
+            
+                <br><br><label>Already registered your company?</label><br>
+                <a class="btn btn-secondary" href="{{ url_for('signup') }}" role="button">Signup</a>
+            </div>
+        </div>
+    </div>
+</container>
+{% endblock %}

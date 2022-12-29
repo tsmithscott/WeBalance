@@ -4,11 +4,11 @@ from werkzeug.security import generate_password_hash
 
 def insert_mock_data(db):
     # Create and add companies
-    db.session.add(Companies('Acme Corporation', '5 The Lindens', 'Floor 12', 'B1 1BZ', 'Birmingham', 'England'))
-    db.session.add(Companies('Globex Corporation', '29 Dowgate Road', 'Floor 2', 'B1 1DA', 'Birmingham', 'England'))
-    db.session.add(Companies('Soylent Corp', '35 Park Manor Farm', 'Floor 7', 'M1 1AD', 'Manchester', 'England'))
-    db.session.add(Companies('Initech', '10 Tunbeck Road', 'Floor 6', 'N21 1RT', 'London', 'England'))
-    db.session.add(Companies('Hooli', '12 Kirby Road', 'Floor 15', 'NE1 1AA', 'Newcastle', 'England'))
+    db.session.add(Companies('Acme Corporation', '5 The Lindens', 'B1 1BZ', 'Birmingham', 'England'))
+    db.session.add(Companies('Globex Corporation', '29 Dowgate Road', 'B1 1DA', 'Birmingham', 'England'))
+    db.session.add(Companies('Soylent Corp', '35 Park Manor Farm', 'M1 1AD', 'Manchester', 'England'))
+    db.session.add(Companies('Initech', '10 Tunbeck Road', 'N21 1RT', 'London', 'England'))
+    db.session.add(Companies('Hooli', '12 Kirby Road', 'NE1 1AA', 'Newcastle', 'England'))
     db.session.commit()
     # Create and add users for employers
     db.session.add(Users('acme@acorporation.com', generate_password_hash("password", method='sha256'), 'John', 'Smith', True))

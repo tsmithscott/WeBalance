@@ -2,7 +2,7 @@
 {% block title %}{{title}}{% endblock %}
 {% block content %}
 <container class="container text-center">
-<div class="card mx-auto" style="width: 30rem; margin-top: 2rem;">
+<div class="card mx-auto" style="width: 30rem; margin-top: 1rem;">
     <div class="card-body">
         <h1 class="card-title">Create Account</h1>
 
@@ -11,15 +11,15 @@
                 <span class="text-nowrap">
                     <div class="form-floating mb-3" style="margin-top: 2rem">
                         <input type="text" name="firstname" class="form-control" id="firstname" placeholder="John" required>
-                        <label for="firstname">First Name</label>
+                        <label for="firstname">First Name*</label>
                     </div>
                     <div class="form-floating mb-3">
                         <input type="text" name="surname" class="form-control" id="surname" placeholder="Doe" required>
-                        <label for="surname">Surname</label>
+                        <label for="surname">Surname*</label>
                     </div>
                     <div class="form-floating mb-3">
                         <input type="email" name="email" class="form-control" id="email" placeholder="john@johndoe.com" required>
-                        <label for="email">Work Email</label>
+                        <label for="email">Work Email*</label>
                     </div>
                     <div class="form-floating mb-3">
                         <select class="form-select" name="company" id="company" style="text-align-last:center;" placeholder="Doe & Co." required>
@@ -28,15 +28,15 @@
                                 <option value="{{ company.id }}">{{company.name}}</option>
                             {% endfor %}
                         </select>
-                        <label for="company">Company</label>
+                        <label for="company">Company*</label>
                     </div>
                     <div class="form-floating mb-3">
                         <input type="password" name="password" class="form-control" id="password" placeholder="123456" required>
-                        <label for="password">Password</label>
+                        <label for="password">Password*</label>
                     </div>
                     <div class="form-floating mb-3">
                         <input type="password" name="confirm_password" class="form-control" id="confirm_password" placeholder="123456" required>
-                        <label for="confirm_password">Confirm Password</label>
+                        <label for="confirm_password">Confirm Password*</label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" name="employer_check" type="checkbox" value="1" id="employer_check">
@@ -48,8 +48,9 @@
                 </span>
             </form>
         
-            <br><br><label>Already have an account?</label><br>
+            <br><br>
             <a class="btn btn-secondary" href="{{ url_for('login') }}" role="button">Login</a>
+            <a class="btn btn-secondary" href="{{ url_for('company') }}" role="button">Register Your Company</a>
         </div>
     </div>
 </div>

@@ -12,15 +12,13 @@ class Companies(db.Model):
     city = db.Column(db.String(50), nullable=False)
     country = db.Column(db.String(50), nullable=False)
 
-    def __init__(self, name, address_line_1, address_line_2,
-                 postcode, city, country):
+    def __init__(self, name, address_line_1, postcode, city, country):
         self.name = name
         self.address_line_1 = address_line_1
-        self.address_line_2 = address_line_2
         self.postcode = postcode
         self.city = city
         self.country = country
-        
+    
     def __repr__(self) -> str:
         return f"Company('{self.name}', '{self.address_line_1}', '{self.address_line_2}', '{self.postcode}', '{self.city}', '{self.country}')"
 
