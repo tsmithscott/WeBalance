@@ -1,9 +1,11 @@
 from datetime import datetime as dt
+from datetime import timedelta
 from datetime import timezone
 
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import desc
 
 from app import app, db, login_manager
 from models import Companies, Employees, Employers, Preferences, Records, Users
@@ -94,7 +96,28 @@ def signup():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template("dashboard.html", title="Dashboard")
+    # If user is an employee, fetch all records for that user
+    if not current_user.is_employer:
+        employee_id = Employees.query.filter_by(user_id=current_user.id).first().id
+        records = Records.query.filter(Records.employee_id==employee_id)
+        
+    # If user is an employer, fetch all records for their employees
+    else:
+        employer_id = Employers.query.filter_by(user_id=current_user.id).first().id
+        employee_ids = []
+        for employee in Employees.query.filter_by(employer_id=employer_id).all():
+            employee_ids.append(employee.id)
+            
+        for employee_id in employee_ids:
+            records = Records.query.filter(Records.employee_id.in_(employee_ids))
+        
+    records = records.order_by(desc(Records.start_time)).all()
+    hours = []
+    for record in records:
+        # Calculate total hours worked and add to a list
+        hours.append(round(timedelta.total_seconds(record.end_time - record.start_time) / 3600, 1)) 
+            
+    return render_template("dashboard.html", title="Dashboard", hours=hours, records=records)
 
 
 @app.route("/preferences", methods=['GET', 'POST'])
@@ -205,4 +228,4 @@ def account():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))

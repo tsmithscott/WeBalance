@@ -3,9 +3,63 @@
 {% block content %}
 <container class="container text-center">
     <div>
-        <h1 style="color:red">!!! YET TO BE IMPLEMENTED !!!</h1>
-        <h1>Dashboard</h1><br />
-        <p>Hi {{ current_user.firstname }}!</p>
+        <h1>{{ current_user.firstname }}'s Dashboard</h1><br />
+    </div>
+    <div class="container text-center">
+        <div class="row pt-3">
+            <div class="col-lg-5" style="margin-top:2rem;">
+                <div class="card mb-3 p-2">
+                    <ul class="list-group" style="max-height:650px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling:touch; overflow-x:hidden; overflow-y:auto">
+                        {% if records %}
+                            {% for record, hour in records|zip(hours) %}
+                                <button type="button" class="list-group-item list-group-item-action">
+                                    <div class="container text-center">
+                                        <div class="row">
+                                            <div class="col-sm mx-auto text-nowrap">
+                                                {% if current_user.is_employer %}
+                                                    <h5>Employee ID: {{ record.employee_id }}</h5>
+                                                {% endif %}
+                                                <h4>{{ record.start_time.strftime('%Y-%m-%d %H:%M') }}-{{ record.end_time.strftime('%H:%M')}}</h4>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm mx-auto text-nowrap">
+                                                <ul class="list-group list-group-horizontal-sm justify-content-center">
+                                                    <li class="list-group-item">Hours = {{ hour }}</li>
+                                                    <li class="list-group-item">Emails = {{ record.emails_sent }}</li>
+                                                    <li class="list-group-item">Calls = {{ record.calls_made }}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </button>
+                            {% endfor %}
+                        {% else %}
+                            <div class="card w-75 mb-3">
+                                <div class="card-body">
+                                <h5 class="card-title">No Records Found...</h5>
+                                {% if not current_user.is_employer %}
+                                    <p class="card-text">To get started, add some records!</p>
+                                    <a href="{{ url_for('records') }}" class="btn btn-primary">Add Records</a>
+                                {% else %}
+                                    <p class="card-text">To get started, tell your employees to start using WeBalance</p>
+                                {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-sm-6" style="max-height:650px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling: touch; overflow-x: hidden; overflow-y:auto;">
+                <div class="card mb-3 p-2">
+                    <h2>
+                        TODO: Add overall stastics/chart here<br />
+                        For employees: their own record data<br />
+                        For employers: the company overall record data<br />
+                    </h2>
+                </div>
+            </div>
+        </div>
     </div>
 </container>
 {% endblock %}
