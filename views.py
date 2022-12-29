@@ -34,7 +34,7 @@ def login():
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        if Users.query.filter_by(email=request.form['email']).first() is None:
+        if not Users.query.filter_by(email=request.form['email']).one():
             if request.form['password'] != request.form['confirm_password']:
                 flash('Passwords do not match!', 'error')
                 return redirect(url_for('signup'))
@@ -89,6 +89,9 @@ def signup():
                 except:
                     flash('There was an issue creating your account! Please make sure you fill all fields.', 'error')
                     return redirect(url_for('signup'))
+        else:
+            flash('Email already exists!', 'error')
+            return redirect(url_for('signup'))
     return render_template("signup.html", title="Create an Account", companies=Companies.query.all())
 
 
