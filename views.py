@@ -141,27 +141,107 @@ def company():
 @app.route("/dashboard")
 @login_required
 def dashboard():
+    seven_days_ago = dt.now().date() - timedelta(days=7)
+    seven_days_ago = dt.combine(seven_days_ago, dt.min.time())
+    thirty_days_ago = dt.now().date() - timedelta(days=30)
+    thirty_days_ago = dt.combine(seven_days_ago, dt.min.time())
+    
     # If user is an employee, fetch all records for that user
     if not current_user.is_employer:
         employee_id = Employees.query.filter_by(user_id=current_user.id).first().id
-        records = Records.query.filter_by(employee_id=employee_id).order_by(desc(Records.start_time)).all()
+        all_time_records = (Records.query
+                   .filter(Records.employee_id==employee_id)
+                   .order_by(desc(Records.start_time))
+                   .all()
+                   )
+        seven_day_records = (Records.query
+                             .filter(Records.employee_id==employee_id)
+                             .filter(Records.start_time >= seven_days_ago)
+                             .order_by(desc(Records.start_time))
+                             .all()
+                             )
+        thirty_day_records = (Records.query
+                             .filter(Records.employee_id==employee_id)
+                             .filter(Records.start_time >= thirty_days_ago)
+                             .order_by(desc(Records.start_time))
+                             .all()
+                             )
         company = Companies.query.filter_by(id=Employers.query.filter_by(id=Employees.query.filter_by(user_id=current_user.id).first().employer_id).first().company_id).first()
         
     # If user is an employer, fetch all records for their employees
     else:
+        # Get all employees for current employer
         employees = Employees.query.filter_by(employer_id=Employers.query.filter_by(user_id=current_user.id).first().id).all()
         employee_ids = []
         for employee in employees:
             employee_ids.append(employee.id)
-        records = Records.query.filter(Records.employee_id.in_(employee_ids)).order_by(desc(Records.start_time)).all()
+        
+        # Get records for all employees 
+        all_time_records = (Records.query
+                   .filter(Records.employee_id.in_(employee_ids))
+                   .order_by(desc(Records.start_time))
+                   .all()
+                   )
+        seven_day_records = (Records.query
+                             .filter(Records.employee_id.in_(employee_ids))
+                             .filter(Records.start_time >= seven_days_ago)
+                             .order_by(desc(Records.start_time))
+                             .all()
+                             )
+        thirty_day_records = (Records.query
+                              .filter(Records.employee_id.in_(employee_ids))
+                              .filter(Records.start_time >= thirty_days_ago)
+                              .order_by(desc(Records.start_time))
+                              .all()
+                             )
         company = Companies.query.filter_by(id=Employers.query.filter_by(user_id=current_user.id).first().company_id).first()
 
+    # Add hours to a list
     hours = []
-    for record in records:
-        # Calculate total hours worked and add to a list
+    for record in all_time_records:
         hours.append(round(timedelta.total_seconds(record.end_time - record.start_time) / 3600, 1))
 
-    return render_template("dashboard.html", title="Dashboard", hours=hours, records=records, company=company)
+    # Add hours, emails and calls over different timeframes for data analysis
+    all_time = []
+    week = []
+    month = []
+    def add_records(records, data):
+        for record in records:
+            data.append({
+                'hours': round(timedelta.total_seconds(record.end_time - record.start_time) / 3600, 1),
+                'emails': record.emails,
+                'calls': record.calls
+            })
+    add_records(all_time_records, all_time)
+    add_records(seven_day_records, week)
+    add_records(thirty_day_records, month)
+    
+    # Calculate totals of hours, emails and calls over different timeframes
+    def calculate_totals(records, keys):
+        totals = {key: sum(record[key] for record in records) for key in keys}
+        return totals
+    totals = {
+        'all_time': calculate_totals(all_time, ['hours', 'emails', 'calls']),
+        'week': calculate_totals(week, ['hours', 'emails', 'calls']),
+        'month': calculate_totals(month, ['hours', 'emails', 'calls'])
+    }
+
+    # Calculate averages of hours, emails and calls over different timeframes
+    def calculate_averages(records, keys):
+        def calculate_average(records, key):
+            return sum(record[key] for record in records) / len(records)
+        averages = {key: calculate_average(records, key) for key in keys}
+        return averages
+    # Add averages to a dictionary
+    averages = {}
+    if len(all_time) > 0:
+        averages['all_time'] = calculate_averages(all_time, ['hours', 'emails', 'calls'])
+    if len(week) > 0:
+        averages['week'] = calculate_averages(week, ['hours', 'emails', 'calls'])
+    if len(month) > 0:
+        averages['month'] = calculate_averages(month, ['hours', 'emails', 'calls'])
+
+    return render_template("dashboard.html", title="Dashboard", hours=hours, records=all_time_records, company=company, averages=averages, totals=totals)
 
 
 @app.route("/preferences", methods=['GET', 'POST'])
@@ -235,6 +315,21 @@ def records():
     else:
         flash("You must be an employee to add records!", "error")
         return redirect(url_for("dashboard"))
+
+
+@app.route("/reports", methods=['GET', 'POST'])
+@login_required
+def reports():
+    if not current_user.is_employer:
+        flash("You must be an employer to view reports!", "error")
+        return redirect(url_for("dashboard"))
+    else:
+        pass
+        
+    employees=None
+    hours=None
+    preferences=None
+    return render_template("reports.html", title="Reports", employees=employees, hours=hours, preferences=preferences)
 
 
 @app.route("/about")

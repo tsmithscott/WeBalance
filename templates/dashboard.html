@@ -35,15 +35,17 @@
                                 </button>
                             {% endfor %}
                         {% else %}
-                            <div class="card w-75 mb-3">
-                                <div class="card-body">
-                                <h5 class="card-title">No Records Found...</h5>
-                                {% if not current_user.is_employer %}
-                                    <p class="card-text">To get started, add some records!</p>
-                                    <a href="{{ url_for('records') }}" class="btn btn-primary">Add Records</a>
-                                {% else %}
-                                    <p class="card-text">To get started, tell your employees to start using WeBalance</p>
-                                {% endif %}
+                            <div class="centered-div">
+                                <div class="card w-75 mb-3">
+                                    <div class="card-body">
+                                    <h5 class="card-title">No Records Found...</h5>
+                                    {% if not current_user.is_employer %}
+                                        <p class="card-text">To get started, add some records!</p>
+                                        <a href="{{ url_for('records') }}" class="btn btn-primary">Add Records</a>
+                                    {% else %}
+                                        <p class="card-text">To get started, tell your employees to start using WeBalance</p>
+                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         {% endif %}

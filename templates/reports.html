@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block content %}
+<container class="container text-center">
+    <div>
+        <h1>{{ current_user.firstname }}'s {% if current_user.is_employer %}Employer{% else %}Employee{% endif %} Dashboard - {{ company.name }}</h1>
+    </div>
+    <div class="container text-center">
+        <div class="row pt-3">
+            <div class="col-lg-5" style="margin-top:2rem;">
+                <div class="card mb-3 p-2">
+                    <ul class="list-group" style="max-height:650px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling:touch; overflow-x:hidden; overflow-y:auto">
+                        {% if employees %}
+                            {% for employee, hour in employee|zip(hours) %}
+                                <div class="row">
+                                    <div class="col-sm mx-auto text-nowrap">
+                                        <ul class="list-group list-group-horizontal-sm justify-content-center">
+                                            {% if hour > (preferences.hours_per_week)*4 %}
+                                                <li class="list-group-item list-group-item-danger">Over limit</li>
+                                            {% else %}
+                                                {% if hour >= 0.8*((preferences.hours_per_week)*4) %}
+                                                    <li class="list-group item list-group-item-success">Near limit</li>
+                                                {% else %}
+                                                    <li class="list-group item list-group-item-warning">Under Limit</li>
+                                                {% endif %}
+                                            {% endif %}
+                                            <li class="list-group-item">Hours = {{ hour }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="centered-div">
+                                <div class="card w-75 mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">No Employees Found...</h5>
+                                        <p class="card-text">To get started, tell your employees to start using WeBalance</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</container>
+{% endblock %}
