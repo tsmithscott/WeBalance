@@ -1,3 +1,4 @@
+import calendar
 from datetime import datetime as dt
 from datetime import timedelta
 from datetime import timezone
@@ -233,7 +234,11 @@ def dashboard():
         averages = {key: calculate_average(records, key) for key in keys}
         return averages
     # Add averages to a dictionary
-    averages = {}
+    averages = {
+        'all_time': {'hours': 0, 'emails': 0, 'calls': 0},
+        'week': {'hours': 0, 'emails': 0, 'calls': 0},
+        'month': {'hours': 0, 'emails': 0, 'calls': 0}
+    }
     if len(all_time) > 0:
         averages['all_time'] = calculate_averages(all_time, ['hours', 'emails', 'calls'])
     if len(week) > 0:
@@ -356,8 +361,8 @@ def reports():
             employee_total_hours = 0
             for record in records:
                 duration = record.end_time - record.start_time
-                if record.end_time.date() != record.start_time.date(): # CHANGE TO if record.end_time.date != record.start_time.date:
-                    duration += timedelta(days=1) - (record.start_time.date() - record.start_time.date())
+                if record.end_time.date() != record.start_time.date():
+                    duration += timedelta(days=1) - (record.end_time.date() - record.start_time.date())
                 # Add the total duration in hours to the employee's total hours
                 employee_total_hours += duration.total_seconds() / 3600
             
@@ -367,7 +372,7 @@ def reports():
         # Get preferences of each employee
         preferences = {employee.id: Preferences.query.filter_by(user_id=employee.user_id).first() for employee in employees}
         
-    return render_template("reports.html", title="Reports", employees=employees, hours=total_hours, preferences=preferences)
+    return render_template("reports.html", title="Reports", employees=employees, hours=total_hours, preferences=preferences, prev_month=calendar.month_name[prev_month], prev_year=prev_year)
 
 
 @app.route("/about")
