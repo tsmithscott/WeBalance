@@ -5,7 +5,7 @@ from datetime import timezone
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import desc
+from sqlalchemy import desc, extract
 
 from app import app, db, login_manager
 from models import Companies, Employees, Employers, Preferences, Records, Users
@@ -209,8 +209,8 @@ def dashboard():
         for record in records:
             data.append({
                 'hours': round(timedelta.total_seconds(record.end_time - record.start_time) / 3600, 1),
-                'emails': record.emails,
-                'calls': record.calls
+                'emails': record.emails_sent,
+                'calls': record.calls_made
             })
     add_records(all_time_records, all_time)
     add_records(seven_day_records, week)
@@ -229,7 +229,7 @@ def dashboard():
     # Calculate averages of hours, emails and calls over different timeframes
     def calculate_averages(records, keys):
         def calculate_average(records, key):
-            return sum(record[key] for record in records) / len(records)
+            return round(sum(record[key] for record in records) / len(records), 2)
         averages = {key: calculate_average(records, key) for key in keys}
         return averages
     # Add averages to a dictionary
@@ -289,12 +289,17 @@ def preferences():
 def records():
     if not current_user.is_employer:
         if request.method == 'POST':
-            date = dt.strptime(request.form['date'], '%Y-%m-%d').date()
             inputted_start_time = dt.strptime(request.form['start-time'], '%H:%M')
             inputted_end_time = dt.strptime(request.form['end-time'], '%H:%M')
             
+            # Convert date and time to datetime object
+            date = dt.strptime(request.form['date'], '%Y-%m-%d').date()
             start_time = dt.combine(date, inputted_start_time.time(), tzinfo=timezone.utc)
+            # If end time is before start time, add a day to the end time
+            if inputted_end_time < inputted_start_time:
+                date += timedelta(days=1)
             end_time = dt.combine(date, inputted_end_time.time(), tzinfo=timezone.utc)
+            
             calls = request.form['calls']
             emails = request.form['emails']
             employee_id = Employees.query.filter_by(user_id=current_user.id).one().id
@@ -324,12 +329,45 @@ def reports():
         flash("You must be an employer to view reports!", "error")
         return redirect(url_for("dashboard"))
     else:
-        pass
+        # Get all employees for the current user
+        employees = Employees.query.join(Employers).filter(Employers.user_id == current_user.id).all()
+
+        # Create a dictionary to store the total hours for each employee
+        total_hours = {}
         
-    employees=None
-    hours=None
-    preferences=None
-    return render_template("reports.html", title="Reports", employees=employees, hours=hours, preferences=preferences)
+        # Iterate over the employees
+        for employee in employees:
+            # Get the previous month and year
+            if dt.now().month == 1:
+                prev_month = 12
+                prev_year = dt.now().year - 1
+            else:
+                prev_month = dt.now().month - 1
+                prev_year = dt.now().year
+
+            # Get all records for the employee from the previous month and year
+            records = Records.query.filter(
+                Records.employee_id == employee.id,
+                extract('month', Records.start_time) == prev_month,
+                extract('year', Records.start_time) == prev_year
+            ).all()
+
+            # Calculate the total hours for the employee in the previous month
+            employee_total_hours = 0
+            for record in records:
+                duration = record.end_time - record.start_time
+                if record.end_time.date() != record.start_time.date(): # CHANGE TO if record.end_time.date != record.start_time.date:
+                    duration += timedelta(days=1) - (record.start_time.date() - record.start_time.date())
+                # Add the total duration in hours to the employee's total hours
+                employee_total_hours += duration.total_seconds() / 3600
+            
+            # Add the total hours to the dictionary, using the employee_id as the key
+            total_hours[employee.id] = round(employee_total_hours, 1)
+        
+        # Get preferences of each employee
+        preferences = {employee.id: Preferences.query.filter_by(user_id=employee.user_id).first() for employee in employees}
+        
+    return render_template("reports.html", title="Reports", employees=employees, hours=total_hours, preferences=preferences)
 
 
 @app.route("/about")

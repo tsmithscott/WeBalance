@@ -3,28 +3,29 @@
 {% block content %}
 <container class="container text-center">
     <div>
-        <h1>{{ current_user.firstname }}'s {% if current_user.is_employer %}Employer{% else %}Employee{% endif %} Dashboard - {{ company.name }}</h1>
+        <h1>{{ prev_month }} Report</h1>
     </div>
     <div class="container text-center">
         <div class="row pt-3">
             <div class="col-lg-5" style="margin-top:2rem;">
-                <div class="card mb-3 p-2">
-                    <ul class="list-group" style="max-height:650px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling:touch; overflow-x:hidden; overflow-y:auto">
+                <div class="card mb-3 p-3">
+                    <ul class="list-group" style="max-height:650px; min-height:650px; min-width:fit-content; -webkit-overflow-scrolling:touch; overflow-x:hidden; overflow-y:auto">
                         {% if employees %}
-                            {% for employee, hour in employee|zip(hours) %}
-                                <div class="row">
+                            {% for employee in employees %}
+                                <div class="row mb-3 d-inline-flex p-2">
                                     <div class="col-sm mx-auto text-nowrap">
                                         <ul class="list-group list-group-horizontal-sm justify-content-center">
-                                            {% if hour > (preferences.hours_per_week)*4 %}
-                                                <li class="list-group-item list-group-item-danger">Over limit</li>
+                                            <li class="list-group-item">Employee ID: {{ employee.id }}</li>
+                                            {% if hours[employee.id] > (preferences[employee.id].max_hours_weekly)*4 %}
+                                                <li class="list-group-item list-group-item-danger p-2">Over limit</li>
                                             {% else %}
-                                                {% if hour >= 0.8*((preferences.hours_per_week)*4) %}
-                                                    <li class="list-group item list-group-item-success">Near limit</li>
+                                                {% if hours[employee.id] >= 0.8*((preferences[employee.id].max_hours_weekly)*4) %}
+                                                    <li class="list-group item list-group-item-warning p-2">Near limit</li>
                                                 {% else %}
-                                                    <li class="list-group item list-group-item-warning">Under Limit</li>
+                                                    <li class="list-group item list-group-item-success p-2">Under Limit</li>
                                                 {% endif %}
                                             {% endif %}
-                                            <li class="list-group-item">Hours = {{ hour }}</li>
+                                            <li class="list-group-item">Hours = {{ hours[employee.id] }}</li>
                                         </ul>
                                     </div>
                                 </div>

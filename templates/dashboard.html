@@ -55,15 +55,22 @@
             <div class="col-sm-6" style="max-height:650px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling: touch; overflow-x: hidden; overflow-y:auto;">
                 <div class="card mb-3 p-2">
                     <h2>
-                        TODO: Add overall stastics/chart here<br />
+                        TODO: Add overall statistics/chart here<br />
                         For employees: their own record data<br />
                         For employers: the company overall record data<br />
                     </h2>
-                    {% if current_user.is_employer %}
-                        [Show company averages here]
-                    {% else %}
-                        [Show employee averages here]
-                    {% endif %}
+                    {% if current_user.is_employer %}All-time company averages:<br />{% else %}All-time employee averages:<br />{% endif %}
+                    {{ averages['all_time']['hours'] }} hours<br />
+                    {{ averages['all_time']['emails'] }} emails<br />
+                    {{ averages['all_time']['calls'] }} calls<br />
+                    {% if current_user.is_employer %}7-day company averages:<br />{% else %}7-day employee averages:<br />{% endif %}
+                    {{ averages['week']['hours'] }} hours<br />
+                    {{ averages['week']['emails'] }} emails<br />
+                    {{ averages['week']['calls'] }} calls<br />
+                    {% if current_user.is_employer %}30-day company averages:<br />{% else %}30-day employee averages:<br />{% endif %}
+                    {{ averages['month']['hours'] }} hours<br />
+                    {{ averages['month']['emails'] }} emails<br />
+                    {{ averages['month']['calls'] }} calls<br />
                 </div>
             </div>
         </div>

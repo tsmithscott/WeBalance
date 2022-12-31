@@ -62,33 +62,38 @@
           </div>
         </div>
       </nav>
-      {% block content %}{% endblock %}
-      <div class="centered-div" style="margin-top:1rem;">
-        {% with errors = get_flashed_messages(category_filter=["success"]) %}
-        {% if errors %}
-            {% for msg in errors %}
-                <div class="card text-bg-success mb-3" style="max-width: 18rem;">
-                    <div class="card-header">Success</div>
-                    <div class="card-body">
-                        <p class="card-text">{{ msg }}</p>
-                    </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
-        {% with errors = get_flashed_messages(category_filter=["error"]) %}
+
+      <div style="background-image:url('static/background.jpg'); background-size:cover; height:105vh;" alt="Credit to kate.sade">
+        <div style="backdrop-filter: blur(20px); height:105vh;">
+          {% block content %}{% endblock %}
+          <div class="centered-div" style="margin-top:1rem;">
+            {% with errors = get_flashed_messages(category_filter=["success"]) %}
             {% if errors %}
                 {% for msg in errors %}
-                    <div class="card text-bg-danger mb-3" style="max-width: 18rem;">
-                        <div class="card-header">Error</div>
+                    <div class="card text-bg-success mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Success</div>
                         <div class="card-body">
                             <p class="card-text">{{ msg }}</p>
                         </div>
                     </div>
                 {% endfor %}
             {% endif %}
-        {% endwith %}
+            {% endwith %}
+            {% with errors = get_flashed_messages(category_filter=["error"]) %}
+                {% if errors %}
+                    {% for msg in errors %}
+                        <div class="card text-bg-danger mb-3" style="max-width: 18rem;">
+                            <div class="card-header">Error</div>
+                            <div class="card-body">
+                                <p class="card-text">{{ msg }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+          </div>
         </div>
+      </div>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
       <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
     </body>
