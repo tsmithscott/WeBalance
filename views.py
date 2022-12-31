@@ -247,7 +247,7 @@ def dashboard():
     if len(month) > 0:
         averages['month'] = calculate_averages(month, ['hours', 'emails', 'calls'])
 
-    return render_template("dashboard.html", title="Dashboard", hours=hours, records=all_time_records, company=company, averages=averages, totals=totals)
+    return render_template("dashboard.html", title="Dashboard", hours=hours, records=all_time_records, company=company, averages=averages, totals=totals, employees=employees)
 
 
 @app.route("/preferences", methods=['GET', 'POST'])

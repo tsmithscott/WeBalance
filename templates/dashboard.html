@@ -54,24 +54,36 @@
             </div>
             <div class="col-sm-6" style="max-height:650px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling: touch; overflow-x: hidden; overflow-y:auto;">
                 <div class="card mb-3 p-3">
-                    <h2>
-                        TODO: Add overall statistics/chart here<br />
-                    </h2>
-                    {% if current_user.is_employer %}All-time company averages:<br />{% else %}All-time employee averages:<br />{% endif %}
-                    {{ averages['all_time']['hours'] }} hours<br />
-                    {{ averages['all_time']['emails'] }} emails<br />
-                    {{ averages['all_time']['calls'] }} calls<br />
-                    {% if current_user.is_employer %}7-day company averages:<br />{% else %}7-day employee averages:<br />{% endif %}
-                    {{ averages['week']['hours'] }} hours<br />
-                    {{ averages['week']['emails'] }} emails<br />
-                    {{ averages['week']['calls'] }} calls<br />
-                    {% if current_user.is_employer %}30-day company averages:<br />{% else %}30-day employee averages:<br />{% endif %}
-                    {{ averages['month']['hours'] }} hours<br />
-                    {{ averages['month']['emails'] }} emails<br />
-                    {{ averages['month']['calls'] }} calls<br />
+                    {% if current_user.is_employer %}
+                        {% if employees %}
+                        <div class="centered-div">
+                            <div id="piechart" style="width: 100%; height: 100%;"></div>
+                        </div>
+                        {% else %}
+                        <h1>Nothing to display!</h1>
+                        {% endif %}
+                    {% else %}
+
+                        {% if current_user.is_employer %}All-time company averages:<br />{% else %}All-time employee averages:<br />{% endif %}
+                        {{ averages['all_time']['hours'] }} hours<br />
+                        {{ averages['all_time']['emails'] }} emails<br />
+                        {{ averages['all_time']['calls'] }} calls<br />
+                        {% if current_user.is_employer %}7-day company averages:<br />{% else %}7-day employee averages:<br />{% endif %}
+                        {{ averages['week']['hours'] }} hours<br />
+                        {{ averages['week']['emails'] }} emails<br />
+                        {{ averages['week']['calls'] }} calls<br />
+                        {% if current_user.is_employer %}30-day company averages:<br />{% else %}30-day employee averages:<br />{% endif %}
+                        {{ averages['month']['hours'] }} hours<br />
+                        {{ averages['month']['emails'] }} emails<br />
+                        {{ averages['month']['calls'] }} calls<br />
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </container>
+{% block scripts %}
+<script type="text/javascript">
+</script>
+{% endblock %}
 {% endblock %}
