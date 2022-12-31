@@ -246,8 +246,11 @@ def dashboard():
         averages['week'] = calculate_averages(week, ['hours', 'emails', 'calls'])
     if len(month) > 0:
         averages['month'] = calculate_averages(month, ['hours', 'emails', 'calls'])
-
-    return render_template("dashboard.html", title="Dashboard", hours=hours, records=all_time_records, company=company, averages=averages, totals=totals, employees=employees)
+        
+    if not current_user.is_employer:
+        return render_template("dashboard.html", title="Dashboard", hours=hours, records=all_time_records, company=company, averages=averages, totals=totals)
+    else:
+        return render_template("dashboard.html", title="Dashboard", hours=hours, records=all_time_records, company=company, averages=averages, totals=totals, employees=employees)
 
 
 @app.route("/preferences", methods=['GET', 'POST'])
