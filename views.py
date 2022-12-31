@@ -1,4 +1,5 @@
 import calendar
+import json
 from datetime import datetime as dt
 from datetime import timedelta
 from datetime import timezone
@@ -368,11 +369,22 @@ def reports():
             
             # Add the total hours to the dictionary, using the employee_id as the key
             total_hours[employee.id] = round(employee_total_hours, 1)
-        
+    
         # Get preferences of each employee
         preferences = {employee.id: Preferences.query.filter_by(user_id=employee.user_id).first() for employee in employees}
         
-    return render_template("reports.html", title="Reports", employees=employees, hours=total_hours, preferences=preferences, prev_month=calendar.month_name[prev_month], prev_year=prev_year)
+        tally = {'under_limit': 0, 'over_limit': 0, 'near_limit': 0}
+        for employee in employees:
+            if total_hours[employee.id] > (preferences[employee.id].max_hours_weekly)*4:
+                tally['over_limit'] += 1
+            else:
+                if total_hours[employee.id] >= 0.75*((preferences[employee.id].max_hours_weekly)*4):
+                    tally['near_limit'] += 1
+                else:
+                    tally['under_limit'] += 1
+
+    return render_template("reports.html", title="Reports", employees=employees, hours=total_hours, preferences=preferences,
+                           prev_month=calendar.month_name[prev_month], prev_year=prev_year, tally=json.dumps(tally))
 
 
 @app.route("/about")

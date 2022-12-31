@@ -56,8 +56,6 @@
                 <div class="card mb-3 p-3">
                     <h2>
                         TODO: Add overall statistics/chart here<br />
-                        For employees: their own record data<br />
-                        For employers: the company overall record data<br />
                     </h2>
                     {% if current_user.is_employer %}All-time company averages:<br />{% else %}All-time employee averages:<br />{% endif %}
                     {{ averages['all_time']['hours'] }} hours<br />
