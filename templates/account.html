@@ -18,6 +18,9 @@
             <div class="container text-center">
                 <p>Deleting your account will remove all your data from our servers.</p>
                 <p>This action cannot be undone.</p>
+                {% if current_user.is_employer %}
+                    <p><i>Deleting your account will also remove all your employees' data from our servers and also the company record.<p></p>
+                {% endif %}
                 <div class="d-flex justify-content-center">
                     <button type="submit" class="btn btn-danger" style="margin-top:1rem">Delete</button><br />
                     <div class="form-check" style="margin-top:2rem; margin-left:1rem;">

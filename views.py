@@ -380,6 +380,7 @@ def about():
     # Populate index.html with info/animations/pictures
     return render_template("index.html", title="About Us")
 
+
 @app.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
@@ -388,14 +389,28 @@ def account():
             # Delete user from database and all associated data
             if current_user.is_employer:
                 employer_id = Employers.query.filter_by(user_id=current_user.id).first().id
-                Employees.query.filter_by(employer_id=employer_id).update(dict(employer_id=-1))
-                Employers.query.filter_by(user_id=current_user.id).delete()
+                # Get all employees for current user
+                employees_ids = [employee.id for employee in Employees.query.filter_by(employer_id=employer_id).all()]
+                employees_user_ids = [employee.user_id for employee in Employees.query.filter_by(employer_id=employer_id).all()]
+                # Delete all data associated with user's employees
+                for user in employees_user_ids:
+                    Preferences.query.filter_by(user_id=user).delete(synchronize_session=False)
+                    Employees.query.filter_by(user_id=user).delete(synchronize_session=False)
+                    Users.query.filter_by(id=user).delete(synchronize_session=False)
+                
+                for user in employees_ids:
+                    Records.query.filter_by(employee_id=user).delete(synchronize_session=False)
+                
+                # Delete employer object for current user
+                company_id = Employers.query.filter_by(user_id=current_user.id).first().company_id
+                Employers.query.filter_by(user_id=current_user.id).delete(synchronize_session=False)
+                Companies.query.filter_by(id=company_id).delete(synchronize_session=False)
             else:
                 user_employee_id = Employees.query.filter_by(user_id=current_user.id).first().id
-                Records.query.filter_by(employee_id=user_employee_id).delete()
-                Employees.query.filter_by(user_id=current_user.id).delete()
-            Preferences.query.filter_by(user_id=current_user.id).delete()
-            Users.query.filter_by(id=current_user.id).delete()
+                Records.query.filter_by(employee_id=user_employee_id).delete(synchronize_session=False)
+                Employees.query.filter_by(user_id=current_user.id).delete(synchronize_session=False)
+            Preferences.query.filter_by(user_id=current_user.id).delete(synchronize_session=False)
+            Users.query.filter_by(id=current_user.id).delete(synchronize_session=False)
             db.session.commit()
         else:
             flash("You must confirm to delete your account & data!", "error")

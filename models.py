@@ -43,7 +43,7 @@ class Employers(db.Model):
     def __init__(self, user_id, company_id):
         self.user_id = user_id
         self.company_id = company_id
-        
+
 
 class Preferences(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -73,6 +73,7 @@ class Users(UserMixin, db.Model):
         self.firstname = firstname
         self.surname = surname
         self.is_employer = is_employer
+
 
 class Records(db.Model):
     id = db.Column(db.Integer, primary_key=True)
