@@ -7,7 +7,7 @@
     </div>
     <div class="container text-center">
         <div class="row pt-3 p-2">
-            <div class="col-lg-5 mt-2">
+            <div class="col-lg-5 col-lg-pull-5 mt-2">
                 <div class="card mb-3 p-3">
                     <ul class="list-group" style="max-height:650px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling:touch; overflow-x:hidden; overflow-y:auto">
                         {% if records %}
@@ -52,7 +52,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-lg-6" style="max-height:750px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling: touch; overflow-x: hidden; overflow-y:auto;">
+            <div class="col-lg-6 col-lg-push-6" style="max-height:750px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling: touch; overflow-x: hidden; overflow-y:auto;">
                 <div class="card mb-3 p-2" style="padding-right:3rem;">
                     {% if records %}
                         <div class="centered-div" style="padding-left:1rem;">
@@ -123,6 +123,18 @@
                             </tr>
                             </tbody>
                         </table>
+                    {% else %}
+                        <div class="row">
+                            <div class="column">
+                                <div class="centered-div">
+                                    <div class="card w-75 mb-3">
+                                        <div class="card-body">
+                                            <h4 class="card-title">No Data to Show!</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     {% endif %}
                 </div> <!-- end of card -->
             </div> <!-- end of col-lg-6 -->

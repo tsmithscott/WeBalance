@@ -124,7 +124,6 @@ def company():
                 new_company.address_line_2 = address_line_2
             else:
                 new_company.address_line_2 = None
-                
             try:
                 # Add new company to database
                 db.session.add(new_company)
@@ -257,6 +256,10 @@ def dashboard():
     week3_start = current_time - timedelta(days=21)
     week4_start = current_time - timedelta(days=28)
 
+    week1_records = [0, 0, 0]
+    week2_records = [0, 0, 0]
+    week3_records = [0, 0, 0]
+    week4_records = [0, 0, 0]
     # If user is an employee, fetch all records for them
     if not current_user.is_employer:
         employee_id = Employees.query.filter_by(user_id=current_user.id).first().id
@@ -379,23 +382,29 @@ def dashboard():
             .all()
         )
 
-    # Calculate the averages for each week
-    week1_averages = [    sum(record[0] for record in week1_records) / len(week1_records),
-        sum(record[1] for record in week1_records) / len(week1_records),
-        sum(record[2] for record in week1_records) / len(week1_records),
-    ]
-    week2_averages = [    sum(record[0] for record in week2_records) / len(week2_records),
-        sum(record[1] for record in week2_records) / len(week2_records),
-        sum(record[2] for record in week2_records) / len(week2_records),
-    ]
-    week3_averages = [    sum(record[0] for record in week3_records) / len(week3_records),
-        sum(record[1] for record in week3_records) / len(week3_records),
-        sum(record[2] for record in week3_records) / len(week3_records),
-    ]
-    week4_averages = [    sum(record[0] for record in week4_records) / len(week4_records),
-        sum(record[1] for record in week4_records) / len(week4_records),
-        sum(record[2] for record in week4_records) / len(week4_records),
-    ]
+    try:
+        # Calculate the averages for each week
+        week1_averages = [    sum(record[0] for record in week1_records) / len(week1_records),
+            sum(record[1] for record in week1_records) / len(week1_records),
+            sum(record[2] for record in week1_records) / len(week1_records),
+        ]
+        week2_averages = [    sum(record[0] for record in week2_records) / len(week2_records),
+            sum(record[1] for record in week2_records) / len(week2_records),
+            sum(record[2] for record in week2_records) / len(week2_records),
+        ]
+        week3_averages = [    sum(record[0] for record in week3_records) / len(week3_records),
+            sum(record[1] for record in week3_records) / len(week3_records),
+            sum(record[2] for record in week3_records) / len(week3_records),
+        ]
+        week4_averages = [    sum(record[0] for record in week4_records) / len(week4_records),
+            sum(record[1] for record in week4_records) / len(week4_records),
+            sum(record[2] for record in week4_records) / len(week4_records),
+        ]
+    except TypeError:
+        week1_averages = [0, 0, 0]
+        week2_averages = [0, 0, 0]
+        week3_averages = [0, 0, 0]
+        week4_averages = [0, 0, 0]
     
     graph_averages = {'week1': week1_averages, 'week2': week2_averages, 'week3': week3_averages, 'week4': week4_averages}
     
@@ -499,15 +508,16 @@ def reports():
         # Create a dictionary to store the total hours for each employee
         total_hours = {}
         
+        # Get the previous month and year
+        if dt.now().month == 1:
+            prev_month = 12
+            prev_year = dt.now().year - 1
+        else:
+            prev_month = dt.now().month - 1
+            prev_year = dt.now().year
+            
         # Iterate over the employees
         for employee in employees:
-            # Get the previous month and year
-            if dt.now().month == 1:
-                prev_month = 12
-                prev_year = dt.now().year - 1
-            else:
-                prev_month = dt.now().month - 1
-                prev_year = dt.now().year
 
             # Get all records for the employee from the previous month and year
             records = Records.query.filter(
@@ -594,7 +604,7 @@ def account():
             company_email = Users.query.filter_by(id=current_user.id).first().email
         else:
             company = Companies.query.filter_by(id=Employers.query.filter_by(id=Employees.query.filter_by(user_id=current_user.id).first().employer_id).first().company_id).first()
-            company_email = Users.query.filter_by(id=Employers.query.filter_by(id=Employees.query.filter_by(id=current_user.id).first().employer_id).first().user_id).first().email
+            company_email = Users.query.filter_by(id=Employers.query.filter_by(id=Employees.query.filter_by(user_id=current_user.id).first().employer_id).first().user_id).first().email
     return render_template("account.html", title="Account", company=company, company_email=company_email)
 
 
