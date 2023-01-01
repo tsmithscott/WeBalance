@@ -7,7 +7,7 @@ from datetime import timezone
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import desc, extract
+from sqlalchemy import desc, extract, func
 
 from app import app, db, login_manager
 from models import Companies, Employees, Employers, Preferences, Records, Users
@@ -43,16 +43,20 @@ def signup():
                 flash('Passwords do not match!', 'error')
                 return redirect(url_for('signup'))
             else:
-                if request.form.get('employer_check'):
-                    if Employers.query.filter_by(company_id=company).first():
-                        flash('Company already has an employer!', 'error')
-                        return redirect(url_for('signup'))
-                    is_employer = 1
+                if company != 'none':
+                    if request.form.get('employer_check'):
+                        if Employers.query.filter_by(company_id=company).first():
+                            flash('Company already has an employer!', 'error')
+                            return redirect(url_for('signup'))
+                        is_employer = 1
+                    else:
+                        if not Employers.query.filter_by(company_id=company).first():
+                            flash('Company does not have an employer! Your employer must register first.', 'error')
+                            return redirect(url_for('signup'))
+                        is_employer = 0
                 else:
-                    if not Employers.query.filter_by(company_id=company).first():
-                        flash('Company does not have an employer! Your employer must register first.', 'error')
-                        return redirect(url_for('signup'))
-                    is_employer = 0
+                    flash("You must select a company!", 'error')
+                    return redirect(url_for('signup'))
                 
                 new_user = Users(email=request.form['email'],
                             password=generate_password_hash(request.form['password'], method='sha256'),
@@ -63,36 +67,33 @@ def signup():
                 try:
                     db.session.add(new_user)
                     db.session.commit()
-                    if company != 'none':
-                        if is_employer == 1:
-                            # Create new employer
-                            new_employer = Employers(user_id=new_user.id, 
-                                                    company_id=company)
-                            db.session.add(new_employer)
+                    if is_employer == 1:
+                        # Create new employer
+                        new_employer = Employers(user_id=new_user.id, 
+                                                company_id=company)
+                        db.session.add(new_employer)
 
-                            # Create default preferences for new employer
-                            new_user_preferences = Preferences(user_id=new_user.id, 
-                                                            max_hours_weekly=32, 
-                                                            max_emails_daily=25, 
-                                                            max_calls_daily=10)
-                            db.session.add(new_user_preferences)
-                            db.session.commit()
-                        elif is_employer == 0:
-                            employer = Employers.query.filter_by(company_id=company).first()
-                            employer_default_preferences = Preferences.query.filter_by(user_id=employer.user_id).first()
-                            new_employee = Employees(user_id=new_user.id, 
-                                                    employer_id=employer.id)
-                            db.session.add(new_employee)
-                            db.session.commit()
-                            # Create default preferences for new employee based on employer's preferences
-                            new_user_preferences = Preferences(user_id=new_user.id, 
-                                                            max_hours_weekly=employer_default_preferences.max_hours_weekly, 
-                                                            max_emails_daily=employer_default_preferences.max_emails_daily, 
-                                                            max_calls_daily=employer_default_preferences.max_calls_daily)
-                            db.session.add(new_user_preferences)
-                            db.session.commit()
-                    else:
-                        raise Exception()
+                        # Create default preferences for new employer
+                        new_user_preferences = Preferences(user_id=new_user.id, 
+                                                        max_hours_weekly=32, 
+                                                        max_emails_daily=25, 
+                                                        max_calls_daily=10)
+                        db.session.add(new_user_preferences)
+                        db.session.commit()
+                    elif is_employer == 0:
+                        employer = Employers.query.filter_by(company_id=company).first()
+                        employer_default_preferences = Preferences.query.filter_by(user_id=employer.user_id).first()
+                        new_employee = Employees(user_id=new_user.id, 
+                                                employer_id=employer.id)
+                        db.session.add(new_employee)
+                        db.session.commit()
+                        # Create default preferences for new employee based on employer's preferences
+                        new_user_preferences = Preferences(user_id=new_user.id, 
+                                                        max_hours_weekly=employer_default_preferences.max_hours_weekly, 
+                                                        max_emails_daily=employer_default_preferences.max_emails_daily, 
+                                                        max_calls_daily=employer_default_preferences.max_calls_daily)
+                        db.session.add(new_user_preferences)
+                        db.session.commit()
                         
                     flash('Account created! Please login.', 'success')
                     return redirect(url_for('login'))
@@ -247,10 +248,164 @@ def dashboard():
     if len(month) > 0:
         averages['month'] = calculate_averages(month, ['hours', 'emails', 'calls'])
         
+    # Get the current time
+    current_time = dt.now()
+
+    # Calculate the start time for each week
+    week1_start = current_time - timedelta(days=7)
+    week2_start = current_time - timedelta(days=14)
+    week3_start = current_time - timedelta(days=21)
+    week4_start = current_time - timedelta(days=28)
+
+    # If user is an employee, fetch all records for them
     if not current_user.is_employer:
-        return render_template("dashboard.html", title="Dashboard", hours=hours, records=all_time_records, company=company, averages=averages, totals=totals)
+        employee_id = Employees.query.filter_by(user_id=current_user.id).first().id
+        # Query the records for each week
+        week1_records = (
+            db.session.query(
+                func.avg(Records.emails_sent),
+                func.avg(Records.calls_made),
+                func.avg(
+                    (
+                        extract("epoch", Records.end_time) - extract("epoch", Records.start_time)
+                    ) / 3600
+                )
+            )
+            .filter(Records.employee_id == employee_id)
+            .filter(Records.start_time.between(week1_start, current_time))
+            .all()
+        )
+        week2_records = (
+            db.session.query(
+                func.avg(Records.emails_sent),
+                func.avg(Records.calls_made),
+                func.avg(
+                    (
+                        extract("epoch", Records.end_time) - extract("epoch", Records.start_time)
+                    ) / 3600
+                )
+            )
+            .filter(Records.employee_id == employee_id)
+            .filter(Records.start_time.between(week2_start, week1_start))
+            .all()
+        )
+        week3_records = (
+            db.session.query(
+                func.avg(Records.emails_sent),
+                func.avg(Records.calls_made),
+                func.avg(
+                    (
+                        extract("epoch", Records.end_time) - extract("epoch", Records.start_time)
+                    ) / 3600
+                )
+            )
+            .filter(Records.employee_id == employee_id)
+            .filter(Records.start_time.between(week3_start, week2_start))
+            .all()
+        )
+        week4_records = (
+            db.session.query(
+                func.avg(Records.emails_sent),
+                func.avg(Records.calls_made),
+                func.avg(
+                    (
+                        extract("epoch", Records.end_time) - extract("epoch", Records.start_time)
+                    ) / 3600
+                )
+            )
+            .filter(Records.employee_id == employee_id)
+            .filter(Records.start_time.between(week4_start, week3_start))
+            .all()
+        )
     else:
-        return render_template("dashboard.html", title="Dashboard", hours=hours, records=all_time_records, company=company, averages=averages, totals=totals, employees=employees)
+        employee_ids = []
+        for employee in Employees.query.filter_by(employer_id=Employers.query.filter_by(user_id=current_user.id).first().id).all():
+            employee_ids.append(employee.id)
+        # Query the records for each week
+        week1_records = (
+            db.session.query(
+                func.avg(Records.emails_sent),
+                func.avg(Records.calls_made),
+                func.avg(
+                    (
+                        extract("epoch", Records.end_time) - extract("epoch", Records.start_time)
+                    ) / 3600
+                )
+            )
+            .filter(Records.employee_id.in_(employee_ids))
+            .filter(Records.start_time.between(week1_start, current_time))
+            .all()
+        )
+        week2_records = (
+            db.session.query(
+                func.avg(Records.emails_sent),
+                func.avg(Records.calls_made),
+                func.avg(
+                    (
+                        extract("epoch", Records.end_time) - extract("epoch", Records.start_time)
+                    ) / 3600
+                )
+            )
+            .filter(Records.employee_id.in_(employee_ids))
+            .filter(Records.start_time.between(week2_start, week1_start))
+            .all()
+        )
+        week3_records = (
+            db.session.query(
+                func.avg(Records.emails_sent),
+                func.avg(Records.calls_made),
+                func.avg(
+                    (
+                        extract("epoch", Records.end_time) - extract("epoch", Records.start_time)
+                    ) / 3600
+                )
+            )
+            .filter(Records.employee_id.in_(employee_ids))
+            .filter(Records.start_time.between(week3_start, week2_start))
+            .all()
+        )
+        week4_records = (
+            db.session.query(
+                func.avg(Records.emails_sent),
+                func.avg(Records.calls_made),
+                func.avg(
+                    (
+                        extract("epoch", Records.end_time) - extract("epoch", Records.start_time)
+                    ) / 3600
+                )
+            )
+            .filter(Records.employee_id.in_(employee_ids))
+            .filter(Records.start_time.between(week4_start, week3_start))
+            .all()
+        )
+
+    # Calculate the averages for each week
+    week1_averages = [    sum(record[0] for record in week1_records) / len(week1_records),
+        sum(record[1] for record in week1_records) / len(week1_records),
+        sum(record[2] for record in week1_records) / len(week1_records),
+    ]
+    week2_averages = [    sum(record[0] for record in week2_records) / len(week2_records),
+        sum(record[1] for record in week2_records) / len(week2_records),
+        sum(record[2] for record in week2_records) / len(week2_records),
+    ]
+    week3_averages = [    sum(record[0] for record in week3_records) / len(week3_records),
+        sum(record[1] for record in week3_records) / len(week3_records),
+        sum(record[2] for record in week3_records) / len(week3_records),
+    ]
+    week4_averages = [    sum(record[0] for record in week4_records) / len(week4_records),
+        sum(record[1] for record in week4_records) / len(week4_records),
+        sum(record[2] for record in week4_records) / len(week4_records),
+    ]
+    
+    graph_averages = {'week1': week1_averages, 'week2': week2_averages, 'week3': week3_averages, 'week4': week4_averages}
+    
+    
+    if not current_user.is_employer:
+        return render_template("dashboard.html", title="Dashboard", hours=hours, records=all_time_records,
+                               company=company, averages=averages, totals=totals, graph_averages=json.dumps(graph_averages))
+    else:
+        return render_template("dashboard.html", title="Dashboard", hours=hours, records=all_time_records,
+                               company=company, averages=averages, totals=totals, employees=employees, graph_averages=json.dumps(graph_averages))
 
 
 @app.route("/preferences", methods=['GET', 'POST'])

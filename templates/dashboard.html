@@ -7,7 +7,7 @@
     </div>
     <div class="container text-center">
         <div class="row pt-3 p-2">
-            <div class="col-lg-5">
+            <div class="col-lg-5 mt-2">
                 <div class="card mb-3 p-3">
                     <ul class="list-group" style="max-height:650px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling:touch; overflow-x:hidden; overflow-y:auto">
                         {% if records %}
@@ -52,14 +52,16 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-lg-6" style="max-height:650px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling: touch; overflow-x: hidden; overflow-y:auto;">
-                <div class="card mb-3 p-3">
+            <div class="col-lg-6" style="max-height:750px; min-height:650px; min-width:fit-content; overflow:scroll; -webkit-overflow-scrolling: touch; overflow-x: hidden; overflow-y:auto;">
+                <div class="card mb-3 p-2" style="padding-right:3rem;">
                     {% if records %}
-                        <div class="centered-div">
+                        <div class="centered-div" style="padding-left:1rem;">
                             <div id="chart" style="width: 100%; height: 100%;"></div>
                         </div>
                         {% block scripts %}
                             <script type="text/javascript">
+                                let averages = JSON.parse({{ graph_averages | tojson }});
+
                                 google.charts.load('current', {'packages':['corechart']});
                                 google.charts.setOnLoadCallback(drawChart);
                             
@@ -67,19 +69,23 @@
                                 // Create the data table
                                 var data = new google.visualization.DataTable();
                                 data.addColumn('number', 'Week');
-                                data.addColumn('number', 'Hours');
                                 data.addColumn('number', 'Emails');
                                 data.addColumn('number', 'Calls');
+                                data.addColumn('number', 'Hours');
                                 data.addRows([
-                                    [1, 6.84, 17.97, 5.54],
-                                    [2, 7.35, 19.05, 3.50],
-                                    [3, 7.35, 19.05, 3.50],
+                                    [1, averages['week1'][0], averages['week1'][1], averages['week1'][2]],
+                                    [2, averages['week2'][0], averages['week2'][1], averages['week2'][2]],
+                                    [3, averages['week3'][0], averages['week3'][1], averages['week3'][2]],
+                                    [4, averages['week4'][0], averages['week4'][1], averages['week4'][2]],
                                 ]);
                             
                                 // Set chart options
                                 var options = {
-                                    title: 'Weekly Averages',
+                                    title: 'Weekly Averages per Record (1-4 Weeks Ago)',
                                     curveType: 'function',
+                                    'width': 600,
+                                    'height': 500,
+                                    'chartArea': {'width': '85%', 'height': '70%'},
                                     legend: { position: 'bottom' }
                                 };
                             
@@ -89,9 +95,6 @@
                                 }
                             </script>
                         {% endblock %}
-                        <br />
-                        <h1>[CHART NOT CONFIGURED]</h1>
-                        <br />
                         <table class="table">
                             <thead>
                             <tr>

@@ -3,7 +3,7 @@
 {% block content %}
 <container class="container text-center">
     <div class="content" style="text-align: center;">
-        <h1 style="text-align: center;">View/Update Preferences</h1>
+        <h1 style="text-align:center; margin-top:3rem;">View/Update Preferences</h1>
         {% if current_user.is_employer %}
             <h5 style="text-align: center;"><i>(Change the default for your employees)</i></h5>
         {% else %}
@@ -13,41 +13,49 @@
             <form action="{{ url_for('preferences') }}" method="POST">
                 <div class="row justify-content-center">
                     <div class="col-sm-6">
-                        <table class="table table-responsive table-striped">
-                            <thead>
-                            <tr>
-                                <th scope="col">Preference Name</th>
-                                <th scope="col">Current Limit</th>
-                                <th scope="col">New Limit</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                    <tr>
-                                        <td>Weekly hours <i>(default={{ employer_default.max_hours_weekly }})</i></th>
-                                        <td>{{ preferences.max_hours_weekly }}</td>
-                                        <td><input type="number" class="form-control" name="weekly_hours" value="0" min="0" max="50"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Daily Emails <i>(default={{ employer_default.max_emails_daily }})</i></th>
-                                        <td>{{ preferences.max_emails_daily }}</td>
-                                        <td><input type="number" class="form-control" name="daily_emails" value="0" min="0" max="100"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Daily Calls <i>(default={{ employer_default.max_calls_daily }})</i></th>
-                                        <td>{{ preferences.max_calls_daily }}</td>
-                                        <td><input type="number" class="form-control" name="daily_calls" value="0" min="0" max="100"></td>
-                                    </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <input class="btn btn-primary" type="submit" value="Update">
-                    </div>
-                </div>
+                        <div class="card">
+                            <table class="table table-responsive table-striped">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Preference Name</th>
+                                    <th scope="col">Current Limit</th>
+                                    <th scope="col">New Limit*</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <td>Weekly hours <i>(default={{ employer_default.max_hours_weekly }})</i></th>
+                                            <td>{{ preferences.max_hours_weekly }}</td>
+                                            <td><input type="number" class="form-control" name="weekly_hours" value="0" min="0" max="50"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Daily Emails <i>(default={{ employer_default.max_emails_daily }})</i></th>
+                                            <td>{{ preferences.max_emails_daily }}</td>
+                                            <td><input type="number" class="form-control" name="daily_emails" value="0" min="0" max="100"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Daily Calls <i>(default={{ employer_default.max_calls_daily }})</i></th>
+                                            <td>{{ preferences.max_calls_daily }}</td>
+                                            <td><input type="number" class="form-control" name="daily_calls" value="0" min="0" max="100"></td>
+                                        </tr>
+                                </tbody>
+                            </table>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <input class="btn btn-primary" type="submit" value="Update">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <p><i>*Note that 0 = no change</i></p>
+                                </div>
+                            </div>
+                        </div> <!-- card -->
+                    </div> <!-- col -->
+                </div> <!-- row -->
             </form>
         </div>
     </div>
 </container>
+
 {% endblock %}
