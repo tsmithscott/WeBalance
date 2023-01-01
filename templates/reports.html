@@ -6,45 +6,9 @@
         <h1><b>{{ prev_month }} {{ prev_year }} Report</b></h1>
     </div>
     <div class="container text-center">
-        <div class="row pt-3 mt-5">
-            <div class="col-lg-5 centered-div align-items-center">
-                <div class="card mb-3 p-3">
-                    <ul class="list-group" style="max-height:650px; min-height:650px; min-width:fit-content; -webkit-overflow-scrolling:touch; overflow-x:hidden; overflow-y:auto">
-                        {% if employees %}
-                            {% for employee in employees %}
-                                <div class="row mb-3 d-inline-flex p-">
-                                    <div class="col-sm mx-auto text-nowrap">
-                                        <ul class="list-group list-group-horizontal-sm justify-content-center">
-                                            <li class="list-group-item">Employee ID: {{ employee.id }}</li>
-                                            {% if hours[employee.id] > (preferences[employee.id].max_hours_weekly)*4 %}
-                                                <li class="list-group-item list-group-item-danger p-2"><b>Over limit</b></li>
-                                            {% else %}
-                                                {% if hours[employee.id] >= 0.75*((preferences[employee.id].max_hours_weekly)*4) %}
-                                                    <li class="list-group item list-group-item-warning p-2"><b>Near limit</b></li>
-                                                {% else %}
-                                                    <li class="list-group item list-group-item-success p-2"><b>Under Limit</b></li>
-                                                {% endif %}
-                                            {% endif %}
-                                            <li class="list-group-item">Hours = {{ hours[employee.id] }}</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="centered-div">
-                                <div class="card w-75 mb-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title">No Employees Found...</h5>
-                                        <p class="card-text">To get started, tell your employees to start using WeBalance</p>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-            <div class="col-lg-6 centered-div align-items-center">
-                <div class="card mb-3 p-3" style="width: 800px; padding-left:500px">
+        <div class="row mt-4">
+            <div class="col-lg-6 col-md-push-6 centered-div">
+                <div class="card mb-3 p-3" style="width:800px; min-width:fit-content; padding-left:500px">
                     {% if employees %}
                         <div class="centered-div">
                             <div id="piechart" style="width: 100%; height: 100%;"></div>
@@ -89,6 +53,42 @@
                             </div>
                         </div>
                     {% endif %}
+                </div>
+            </div>
+            <div class="col-md-5 col-md-push-5 centered-div align-items-center" style="min-width:fit-content; ">
+                <div class="card mb-3 p-3">
+                    <ul class="list-group" style="max-height:650px; min-height:650px; min-width:fit-content; -webkit-overflow-scrolling:touch; overflow-x:hidden; overflow-y:auto">
+                        {% if employees %}
+                            {% for employee in employees %}
+                                <div class="row mb-3 d-inline-flex p-">
+                                    <div class="col-sm mx-auto text-nowrap">
+                                        <ul class="list-group list-group-horizontal-sm justify-content-center">
+                                            <li class="list-group-item">Employee ID: {{ employee.id }}</li>
+                                            {% if hours[employee.id] > (preferences[employee.id].max_hours_weekly)*4 %}
+                                                <li class="list-group-item list-group-item-danger p-2"><b>Over limit</b></li>
+                                            {% else %}
+                                                {% if hours[employee.id] >= 0.75*((preferences[employee.id].max_hours_weekly)*4) %}
+                                                    <li class="list-group item list-group-item-warning p-2"><b>Near limit</b></li>
+                                                {% else %}
+                                                    <li class="list-group item list-group-item-success p-2"><b>Under Limit</b></li>
+                                                {% endif %}
+                                            {% endif %}
+                                            <li class="list-group-item">Hours = {{ hours[employee.id] }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="centered-div">
+                                <div class="card w-75 mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">No Employees Found...</h5>
+                                        <p class="card-text">To get started, tell your employees to start using WeBalance</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
         </div>

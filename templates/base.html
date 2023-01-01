@@ -66,8 +66,8 @@
         </div>
       </nav>
 
-      <div style="background-image:url('static/background.jpg'); background-size:cover; height:105vh;" alt="Credit to kate.sade">
-        <div style="backdrop-filter: blur(20px); height:105vh;">
+      <div style="background-image: url('static/background.jpg'); background-size: cover; -webkit-background-size: cover; height: 105vh;" alt="Credit to kate.sade">
+        <div style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); height: 105vh;">
           {% block content %}{% endblock %}
           <div class="centered-div" style="margin-top:1rem;">
             {% with errors = get_flashed_messages(category_filter=["success"]) %}
