@@ -588,7 +588,14 @@ def account():
         
         flash("Your account has been deleted!", "success")
         return redirect(url_for('logout'))
-    return render_template("account.html", title="Account")
+    else:
+        if current_user.is_employer:
+            company = Companies.query.filter_by(id=Employers.query.filter_by(user_id=current_user.id).first().company_id).one()
+            company_email = Users.query.filter_by(id=current_user.id).first().email
+        else:
+            company = Companies.query.filter_by(id=Employers.query.filter_by(id=Employees.query.filter_by(user_id=current_user.id).first().employer_id).first().company_id).first()
+            company_email = Users.query.filter_by(id=Employers.query.filter_by(id=Employees.query.filter_by(id=current_user.id).first().employer_id).first().user_id).first().email
+    return render_template("account.html", title="Account", company=company, company_email=company_email)
 
 
 @app.route("/logout")

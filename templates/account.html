@@ -4,6 +4,17 @@
 <container class="container text-center">
     <div>
         <h1>Account</h1>
+        <h3>Company Details</h3>
+        <p>
+            Name: {{ company.name }}<br />
+            Email: {{ company_email }}<br />
+            Address Line 1: {{ company.address_line_1 }}<br />
+            {% if company.address_line_2 %}Address Line 2: {{company.address_line_2}}<br />{% endif %}
+            Postcode: {{ company.postcode }}<br />
+            City: {{ company.city }}<br />
+            Country: {{ company.country }}
+        </p>
+        <h3>Personal Details</h3>
         <p>To download your data, contact us at:<br /> fake@email.com</p><br />
         <h3>What data is stored and how is it used?</h3>
         <p>
@@ -17,9 +28,9 @@
         <form action="{{ url_for('account') }}" method="POST">
             <div class="container text-center">
                 <p>Deleting your account will remove all your data from our servers.</p>
-                <p>This action cannot be undone.</p>
+                <p><i>This action cannot be undone!</i></p>
                 {% if current_user.is_employer %}
-                    <p><i>Deleting your account will also remove all your employees' data from our servers and also the company record.<p></p>
+                    <p style="color:red;"><b><i>Deleting your account will also remove all your employees' data from our servers and also the company record.</i></b></p>
                 {% endif %}
                 <div class="d-flex justify-content-center">
                     <button type="submit" class="btn btn-danger" style="margin-top:1rem">Delete</button><br />
