@@ -408,7 +408,6 @@ def dashboard():
     
     graph_averages = {'week1': week1_averages, 'week2': week2_averages, 'week3': week3_averages, 'week4': week4_averages}
     
-    
     if not current_user.is_employer:
         return render_template("dashboard.html", title="Dashboard", hours=hours, records=all_time_records,
                                company=company, averages=averages, totals=totals, graph_averages=json.dumps(graph_averages))
