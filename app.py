@@ -6,13 +6,13 @@ from flask_login import LoginManager
 
 from config import Config
 
-app = Flask(__name__)
-app.config.from_object(Config)
-app.jinja_env.filters['zip'] = zip
+app = Flask(__name__) # Creates Flask app
+app.config.from_object(Config) # Loads config.py
+app.jinja_env.filters['zip'] = zip # Allows zip() to be used in Jinja templates
 
-db = SQLAlchemy(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+db = SQLAlchemy(app) # Creates SQLAlchemy object
+login_manager = LoginManager(app) # Creates LoginManager object
+login_manager.login_view = 'login' # Sets the login route
 
 from views import *
 from models import *
